@@ -1,0 +1,14 @@
+{
+  "name": "@ledger/api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "FastAPI over DuckDB. The Python side lives in .venv, set up by pnpm api:setup at the repo root.",
+  "scripts": {
+    "setup": "uv venv .venv --python 3.12 --allow-existing && uv pip install --python .venv/bin/python -e '.[dev]'",
+    "lint": ".venv/bin/ruff check ledger_api tests",
+    "test": ".venv/bin/pytest -q",
+    "typecheck": ".venv/bin/python -m compileall -q ledger_api",
+    "ingest": ".venv/bin/python -m ledger_api ingest",
+    "serve": ".venv/bin/python -m ledger_api serve"
+  }
+}
