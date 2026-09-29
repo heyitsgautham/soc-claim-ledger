@@ -1,0 +1,10 @@
+# docker compose up, then open http://localhost:3157
+services:
+  soc-claim-ledger:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile
+    image: soc-claim-ledger:0.1
+    ports:
+      - "127.0.0.1:3157:3157"
+      - "127.0.0.1:8157:8157"
