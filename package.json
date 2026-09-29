@@ -1,0 +1,44 @@
+{
+  "name": "soc-claim-ledger",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.26.2",
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "scripts": {
+    "simulate": "pnpm --filter @ledger/simulate run simulate",
+    "dev": "pnpm simulate && pnpm analyse && pnpm --filter @ledger/web dev",
+    "build": "pnpm simulate && pnpm analyse && pnpm --filter @ledger/web build",
+    "start": "pnpm --filter @ledger/web start",
+    "demo": "pnpm build && pnpm start",
+    "test": "pnpm simulate && pnpm analyse && pnpm test:unit && pnpm test:api",
+    "typecheck": "pnpm -r typecheck && tsc -p tsconfig.json",
+    "take": "tsx recording/take.ts",
+    "ledger": "tsx packages/claims/src/cli.ts",
+    "analyse": "tsx packages/claims/src/analyse/cli.ts",
+    "record": "tsx recording/record.ts",
+    "voiceover": "tsx recording/voiceover.ts",
+    "mux": "tsx recording/mux.ts",
+    "test:unit": "tsx --test packages/*/test/*.test.ts",
+    "test:e2e": "tsx --test apps/web/e2e/*.test.ts",
+    "lint": "biome lint . && pnpm --filter @ledger/api lint",
+    "test:api": "pnpm --filter @ledger/api test",
+    "api:setup": "pnpm --filter @ledger/api run setup",
+    "docs:pdf": "tsx docs/build-pdf.ts",
+    "bootstrap": "pnpm install && pnpm api:setup",
+    "check:names": "tsx scripts/private-names.ts",
+    "hero": "tsx recording/hero.ts"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.14",
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "@ffprobe-installer/ffprobe": "^2.1.2",
+    "@ledger/claims": "workspace:*",
+    "@types/node": "24.13.6",
+    "marked": "18.0.14",
+    "playwright": "1.63.0",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3"
+  }
+}

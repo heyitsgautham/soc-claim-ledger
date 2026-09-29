@@ -1,0 +1,11 @@
+**/node_modules
+**/.next
+apps/api/.venv
+data
+dist
+recording/out
+recording/videos
+.DS_Store
+**/.env*
+recording/vo
+recording/shots
