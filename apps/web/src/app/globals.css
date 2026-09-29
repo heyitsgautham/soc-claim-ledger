@@ -1,0 +1,482 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/*
+  An examiner's desk. Off-white paper, ink, one red for gaps, one blue for evidence,
+  ruled rows like a bank ledger, and nothing that glows.
+*/
+
+:root {
+  --paper: #f7f5f0;
+  --paper-deep: #efebe2;
+  --paper-sheet: #fbfaf6;
+  --ink: #1b1b1b;
+  --ink-2: #47443e;
+  --ink-3: #7a766c;
+  --ink-4: #a39e92;
+  --rule: #d9d3c5;
+  --rule-soft: #e7e2d7;
+  --gap: #b42318;
+  --gap-tint: #f2ddd8;
+  --gap-soft: #d4796e;
+  --evidence: #1f4e79;
+  --evidence-tint: #dbe4ec;
+  --evidence-soft: #8fa7bf;
+
+  /* shadcn tokens, mapped onto the desk */
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --card: var(--paper-sheet);
+  --card-foreground: var(--ink);
+  --popover: var(--paper-sheet);
+  --popover-foreground: var(--ink);
+  --primary: var(--ink);
+  --primary-foreground: var(--paper);
+  --secondary: var(--paper-deep);
+  --secondary-foreground: var(--ink);
+  --muted: var(--paper-deep);
+  --muted-foreground: var(--ink-3);
+  --accent: var(--paper-deep);
+  --accent-foreground: var(--ink);
+  --destructive: var(--gap);
+  --border: var(--rule);
+  --input: var(--rule);
+  --ring: var(--evidence);
+  --radius: 0px;
+
+  --footer-height: 30px;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-deep: var(--paper-deep);
+  --color-paper-sheet: var(--paper-sheet);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-ink-4: var(--ink-4);
+  --color-rule: var(--rule);
+  --color-rule-soft: var(--rule-soft);
+  --color-gap: var(--gap);
+  --color-gap-tint: var(--gap-tint);
+  --color-gap-soft: var(--gap-soft);
+  --color-evidence: var(--evidence);
+  --color-evidence-tint: var(--evidence-tint);
+  --color-evidence-soft: var(--evidence-soft);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+
+  --font-serif: var(--font-plex-serif);
+  --font-sans: var(--font-plex-sans);
+  --font-mono: var(--font-plex-mono);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    background: var(--paper);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    @apply bg-paper font-sans text-ink;
+    font-feature-settings: "kern" 1;
+  }
+  ::selection {
+    background: var(--evidence-tint);
+    color: var(--ink);
+  }
+  :focus-visible {
+    outline: 2px solid var(--evidence);
+    outline-offset: 2px;
+  }
+}
+
+@layer utilities {
+  /* Small capitals for the ledger's column and section labels. */
+  .label-caps {
+    font-family: var(--font-plex-sans);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .num {
+    font-family: var(--font-plex-mono);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+  /* The accountant's double rule under a ledger heading and above its footing. */
+  .double-rule {
+    border-bottom: 3px double var(--ink);
+  }
+  .hatch {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      transparent 0 5px,
+      color-mix(in srgb, var(--ink-3) 35%, transparent) 5px 6px
+    );
+  }
+  .hatch-gap-soft {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      var(--paper-sheet) 0 6px,
+      color-mix(in srgb, var(--gap) 22%, var(--paper-sheet)) 6px 7.5px
+    );
+  }
+  .hatch-gap {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      var(--gap-tint) 0 2px,
+      var(--gap) 2px 3.5px
+    );
+  }
+}
+
+/* The gap bar draws from the attested mark toward the evidence, once, on load. */
+@keyframes draw-x {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes rise-y {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+@keyframes settle {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes appear {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.anim-draw-x {
+  transform: scaleX(0);
+  animation: draw-x 760ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+.anim-rise-y {
+  transform: scaleY(0);
+  transform-origin: bottom;
+  animation: rise-y 420ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+.anim-settle {
+  opacity: 0;
+  animation: settle 420ms ease-out forwards;
+}
+.anim-appear {
+  opacity: 0;
+  animation: appear 300ms ease-out forwards;
+}
+
+/* The check. A reading rule runs down the signed report, and each line gets its answer
+   in the margin as the rule passes it. Delays come from each row's --at, in ms. */
+@keyframes sweep {
+  from {
+    top: 0%;
+    opacity: 1;
+  }
+  96% {
+    opacity: 1;
+  }
+  to {
+    top: 100%;
+    opacity: 0;
+  }
+}
+@keyframes margin-in {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes strike {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes fade-to-quiet {
+  to {
+    color: var(--ink-3);
+  }
+}
+@keyframes stamp {
+  from {
+    opacity: 0;
+    transform: rotate(-4deg) scale(1.35);
+  }
+  60% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+    transform: rotate(-4deg) scale(1);
+  }
+}
+@keyframes pulse-rule {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes flip-in {
+  from {
+    opacity: 0;
+    transform: scale(1.12);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.anim-flip {
+  opacity: 0;
+  animation: flip-in 520ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.anim-sweep {
+  animation: sweep var(--sweep-ms, 6000ms) linear var(--sweep-delay, 0ms) both;
+}
+.anim-margin-in {
+  opacity: 0;
+  animation: margin-in 380ms cubic-bezier(0.22, 0.61, 0.36, 1) calc(var(--at, 0) * 1ms) forwards;
+}
+.anim-strike {
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: strike 420ms cubic-bezier(0.55, 0, 0.2, 1) calc(var(--at, 0) * 1ms) forwards;
+}
+.anim-quiet {
+  animation: fade-to-quiet 500ms ease-out calc(var(--at, 0) * 1ms) forwards;
+}
+.anim-stamp {
+  opacity: 0;
+  animation: stamp 520ms cubic-bezier(0.2, 0.8, 0.2, 1) calc(var(--at, 0) * 1ms) forwards;
+}
+.anim-pulse-rule {
+  animation: pulse-rule 1.2s ease-in-out infinite;
+}
+
+/* The signed report turns into the ledger. Each claim's text and figures keep one
+   view-transition name across both layouts, so the browser carries them into place. */
+::view-transition-group(*) {
+  animation-duration: 1100ms;
+  animation-timing-function: cubic-bezier(0.65, 0, 0.25, 1);
+}
+/* The masthead and footer stay put. In the check, the page around the claims clears
+   first and returns only once they have landed. */
+::view-transition-group(masthead),
+::view-transition-group(site-footer),
+::view-transition-old(masthead),
+::view-transition-new(masthead),
+::view-transition-old(site-footer),
+::view-transition-new(site-footer) {
+  animation: none;
+}
+::view-transition-old(masthead),
+::view-transition-old(site-footer) {
+  display: none;
+}
+/* A moving claim shows only its new snapshot, scaled from where the old one sat,
+   so two sizes of the same figure never cross-fade into a double image. */
+::view-transition-old(*.vt-morph) {
+  display: none;
+}
+::view-transition-new(*.vt-morph) {
+  animation: none;
+}
+/* Opening the report. The picture clears and the report grows out of its half of the
+   submission folder, text and all. */
+html[data-vt="open"]::view-transition-old(root) {
+  animation: 300ms ease-in both fade-out-vt;
+}
+html[data-vt="open"]::view-transition-new(root) {
+  animation: 480ms ease-out 760ms both fade-in-vt;
+}
+html[data-vt="open"]::view-transition-new(vt-sheet) {
+  animation: 240ms ease-out both fade-in-vt;
+}
+/* The entity's name carries over from the picture without fading, and rides above the
+   growing report, which Chrome would otherwise stack over it in the picture's order. */
+html[data-vt="open"]::view-transition-new(vt-entity.vt-morph) {
+  animation: none;
+}
+html[data-vt="open"]::view-transition-group(vt-entity) {
+  z-index: 2;
+}
+/* In the check the sheet has nowhere to go, so it leaves with the page. */
+html[data-vt="check"]::view-transition-old(vt-sheet) {
+  animation: 360ms ease-in both fade-out-vt;
+}
+html[data-vt="check"]::view-transition-old(root) {
+  animation: 360ms ease-in both fade-out-vt;
+}
+html[data-vt="check"]::view-transition-new(root) {
+  animation: 520ms ease-out 900ms both fade-in-vt;
+}
+@keyframes fade-out-vt {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes fade-in-vt {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Method page: each requirement's tick draws, then its line comes up to full ink. */
+@keyframes tick {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes ink-in {
+  from {
+    color: var(--ink-4);
+  }
+  to {
+    color: var(--ink);
+  }
+}
+.anim-tick {
+  stroke-dasharray: 20;
+  stroke-dashoffset: 20;
+  animation: tick 360ms cubic-bezier(0.22, 0.61, 0.36, 1) calc(var(--at, 0) * 1ms) forwards;
+}
+.anim-quiet-in {
+  color: var(--ink-4);
+  animation: ink-in 360ms ease-out calc(var(--at, 0) * 1ms) forwards;
+}
+
+/* Portfolio rows stay hidden until the client has placed them in filing order. */
+.portfolio-rows[data-pf="pending"] > li {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-draw-x,
+  .anim-rise-y,
+  .anim-settle,
+  .anim-appear,
+  .anim-margin-in,
+  .anim-strike,
+  .anim-stamp,
+  .anim-flip {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  .anim-sweep,
+  .anim-pulse-rule {
+    animation: none;
+    opacity: 0;
+  }
+  .anim-quiet {
+    animation: none;
+    color: var(--ink-3);
+  }
+  .anim-tick {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+  .anim-quiet-in {
+    animation: none;
+    color: var(--ink);
+  }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+/* Printing the report: A4, no margins, one report page per sheet, nothing but the document. */
+@page {
+  size: A4;
+  margin: 0;
+}
+.print-mode {
+  background: white;
+}
+.print-mode .report-page {
+  box-shadow: none;
+  break-after: page;
+  min-height: 1122px;
+  height: 1122px;
+  overflow: hidden;
+}
+.print-mode .report-page:last-child {
+  break-after: auto;
+}
+@media print {
+  html,
+  body {
+    background: white !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+  body > #scroll-root {
+    overflow: visible !important;
+  }
+  [data-testid="site-footer"] {
+    display: none !important;
+  }
+  .print-mode > div {
+    gap: 0 !important;
+  }
+}
