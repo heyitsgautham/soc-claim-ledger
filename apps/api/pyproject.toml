@@ -1,6 +1,6 @@
 [project]
 name = "ledger-api"
-version = "0.1.0"
+version = "0.2.0"
 description = "SOC Claim Ledger service: submission ingestion to Parquet and the claim ledger recomputed in SQL with DuckDB."
 requires-python = ">=3.11"
 dependencies = [
