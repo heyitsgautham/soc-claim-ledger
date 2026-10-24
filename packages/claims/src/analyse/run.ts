@@ -1,6 +1,7 @@
 import { mkdirSync, readFileSync, rmSync, writeFileSync, existsSync } from "node:fs";
 import path from "node:path";
-import { analyseEntity, Workspace } from "./analyse";
+import { analyseEntity } from "./analyse";
+import { Workspace } from "./workspace";
 import { calibrate } from "./calibration";
 import type { EntityAnalysis, Portfolio, PortfolioEntry, Verdict } from "./types";
 
