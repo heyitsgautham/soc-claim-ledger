@@ -13,6 +13,8 @@ ENV PNPM_HOME=/pnpm \
     PLAYWRIGHT_BROWSERS_PATH=/ms-playwright \
     CI=1
 
+COPY --from=ghcr.io/astral-sh/uv:0.5.14 /uv /usr/local/bin/uv
+
 RUN apt-get update \
  && apt-get install -y --no-install-recommends python3 python3-venv python3-pip curl ca-certificates \
  && rm -rf /var/lib/apt/lists/* \
@@ -32,9 +34,9 @@ RUN pnpm install --frozen-lockfile
 # Chromium and its system libraries, for the PDF export and the offline test.
 RUN pnpm exec playwright install --with-deps chromium
 
+# The API's Python packages, exactly as apps/api/uv.lock pins them, on the image's own Python.
 COPY apps/api apps/api
-RUN python3 -m venv apps/api/.venv \
- && apps/api/.venv/bin/pip install --no-cache-dir -e "apps/api[dev]"
+RUN cd apps/api && UV_PYTHON_DOWNLOADS=never uv sync --locked --extra dev --python python3
 
 COPY . .
 RUN rm -rf data/local && pnpm build
