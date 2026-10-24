@@ -29,7 +29,7 @@ Add both, or the parity test fails.
 
 ## Before you push
 
-Run what CI runs.
+Run `pnpm format` first, then what CI runs.
 
 ```bash
 pnpm lint

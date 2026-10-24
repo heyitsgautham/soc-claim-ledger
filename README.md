@@ -56,6 +56,9 @@ pnpm --filter @ledger/api ingest   # verify each export's SHA-256 and write the 
 pnpm --filter @ledger/api serve    # http://127.0.0.1:8157/health, /entities, /entities/P-04/ledger/sql
 ```
 
+The API writes one JSON object per request to stderr, with method, path, status and milliseconds.
+A failed request also logs its traceback and answers `{"error": ..., "detail": ...}`.
+
 ### Docker
 
 ```bash
@@ -82,7 +85,8 @@ The pytest run includes the parity test that holds the SQL ledger and the TypeSc
 | `pnpm test:coverage` | the unit tests under c8, failing below the floors in `.c8rc.json` |
 | `pnpm test:api` | `apps/api/tests` with pytest and pytest-cov, failing below `fail_under` in `apps/api/pyproject.toml` |
 | `pnpm test:e2e` | every screen in Chromium against a running `pnpm start`, failing on any request that leaves the machine |
-| `pnpm lint` | Biome over the TypeScript, Ruff over the Python |
+| `pnpm lint` | Biome lint and format check over the TypeScript, Ruff check and format check over the Python |
+| `pnpm format` | rewrites both sides with Biome and Ruff |
 | `pnpm typecheck` | `tsc` in every package, after `pnpm --filter @ledger/web build` |
 | `pnpm audit:deps` | `pnpm audit` and `pip-audit` over the lockfiles, high severity and up |
 

@@ -45,8 +45,8 @@ Ingestion of real CSE exports through a schema-mapping step, the UI reading from
 | `packages/detect` | SLA bunching, templated notes, negative space against sector peers, weekend coverage, repeat without remediation, versioned registry |
 | `packages/simulate` | SOC simulator with analysts, shifts, queues, SLAs and behaviour toggles, the claims writer, hidden ground truth, simulated examiners |
 | `apps/web` | Next.js App Router UI, self-hosted IBM Plex, verdict and PDF routes |
-| `apps/api` | FastAPI over DuckDB and Parquet, JSON and CSV ingestion, SQL ledger, parity tests |
-| `deploy` | One Docker image, USB bundle and install script, network-off proof |
+| `apps/api` | FastAPI over DuckDB and Parquet, JSON and CSV ingestion, SQL ledger, parity tests, one JSON log line per request |
+| `Dockerfile`, `deploy` | One Docker image built from the root Dockerfile, USB bundle and install script, network-off proof |
 
 ## Offline by construction
 
