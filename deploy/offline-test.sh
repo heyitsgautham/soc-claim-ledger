@@ -4,7 +4,7 @@
 # which fails on any request that leaves the origin. Nothing can reach the internet here.
 set -eu
 cd "$(dirname "$0")/.."
-docker image inspect soc-claim-ledger:0.1 >/dev/null 2>&1 || docker build -f deploy/Dockerfile -t soc-claim-ledger:0.1 .
+docker image inspect soc-claim-ledger:0.1 >/dev/null 2>&1 || docker build -t soc-claim-ledger:0.1 .
 docker rm -f soc-claim-ledger-offline >/dev/null 2>&1 || true
 docker run -d --name soc-claim-ledger-offline --network none soc-claim-ledger:0.1 >/dev/null
 trap 'docker rm -f soc-claim-ledger-offline >/dev/null 2>&1 || true' EXIT

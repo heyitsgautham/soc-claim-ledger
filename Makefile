@@ -3,7 +3,7 @@
 .PHONY: image offline-test usb
 
 image:
-	docker build -f deploy/Dockerfile -t soc-claim-ledger:0.1 .
+	docker build -t soc-claim-ledger:0.1 .
 
 offline-test:
 	sh deploy/offline-test.sh

@@ -2,7 +2,7 @@
 # app, the analysis and its seeded data, the FastAPI and DuckDB service, and a Chromium
 # for PDF export. Build it where there is a network, then carry the saved tarball across.
 #
-#   docker build -f deploy/Dockerfile -t soc-claim-ledger:0.1 .
+#   docker build -t soc-claim-ledger:0.1 .
 #   docker run -p 127.0.0.1:3157:3157 soc-claim-ledger:0.1
 
 FROM node:22-bookworm-slim

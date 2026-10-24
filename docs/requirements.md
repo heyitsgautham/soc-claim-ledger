@@ -31,8 +31,8 @@ The same list, without code paths, is the Method and sources screen at `/method`
 | Statement | How SOC Claim Ledger meets it | Proof |
 |---|---|---|
 | Operate fully offline and air-gapped | No part of the product calls a network | `apps/web/e2e/offline.test.ts`, `make offline-test` |
-| No Internet connectivity | Fonts and assets are bundled, Next.js telemetry is off | `apps/web/src/app/layout.tsx`, `deploy/Dockerfile` |
-| No cloud services or SaaS platforms | One Docker image, or a USB install | `deploy/Dockerfile`, `deploy/usb-install.sh` |
+| No Internet connectivity | Fonts and assets are bundled, Next.js telemetry is off | `apps/web/src/app/layout.tsx`, `Dockerfile` |
+| No cloud services or SaaS platforms | One Docker image, or a USB install | `Dockerfile`, `deploy/usb-install.sh` |
 | No externally hosted AI models or APIs | No model at all, every finding comes from a versioned rule | `docs/model-card.md` |
 | Local deployment and local data processing | DuckDB and Parquet on the examiner's machine | `apps/api/ledger_api/` |
 
