@@ -5,12 +5,12 @@ description = "SOC Claim Ledger service: submission ingestion to Parquet and the
 requires-python = ">=3.11"
 dependencies = [
   "duckdb==1.3.2",
-  "fastapi==0.116.1",
+  "fastapi==0.162.0",
   "uvicorn==0.35.0",
 ]
 
 [project.optional-dependencies]
-dev = ["pytest==8.4.1", "pytest-cov==7.1.0", "httpx==0.28.1", "ruff==0.12.7"]
+dev = ["pytest==9.1.1", "pytest-cov==7.1.0", "httpx==0.28.1", "ruff==0.12.7"]
 
 [build-system]
 requires = ["setuptools>=68"]
