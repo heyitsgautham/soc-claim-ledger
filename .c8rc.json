@@ -1,13 +1,28 @@
 {
   "all": true,
-  "src": ["packages", "apps/web/src/lib"],
-  "include": ["packages/*/src/**/*.ts", "apps/web/src/lib/format.ts", "apps/web/src/lib/scale.ts", "apps/web/src/lib/brand.ts"],
-  "exclude": ["packages/*/src/**/cli.ts", "packages/*/src/**/types.ts", "packages/claims/src/model.ts"],
-  "reporter": ["text-summary", "lcov"],
+  "src": [
+    "packages",
+    "apps/web/src/lib"
+  ],
+  "include": [
+    "packages/*/src/**/*.ts",
+    "apps/web/src/lib/format.ts",
+    "apps/web/src/lib/scale.ts",
+    "apps/web/src/lib/brand.ts"
+  ],
+  "exclude": [
+    "packages/*/src/**/cli.ts",
+    "packages/*/src/**/types.ts",
+    "packages/claims/src/model.ts"
+  ],
+  "reporter": [
+    "text-summary",
+    "lcov"
+  ],
   "reports-dir": "coverage",
   "check-coverage": true,
-  "lines": 70,
-  "functions": 65,
-  "branches": 80,
-  "statements": 70
+  "lines": 85,
+  "functions": 90,
+  "branches": 85,
+  "statements": 85
 }
