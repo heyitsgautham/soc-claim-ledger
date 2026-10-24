@@ -1,14 +1,13 @@
-import type { Verdict, VerdictValue } from "@ledger/claims/model";
+import type { Verdict } from "@ledger/claims/model";
 import { NextResponse } from "next/server";
-import { loadEntity, localVerdicts, recordAudit, recordVerdict } from "@/lib/data";
+import { entityCodes, loadEntity, localVerdicts, recordAudit, recordVerdict } from "@/lib/data";
+import { parseVerdictRequest, VERDICT_REQUEST_ERROR } from "@/lib/verdict-request";
 
 // Blind verdict entry. The browser sends only which record and which verdict. The server
 // looks the record up in the sample sheet, attaches the detectors that had flagged it,
 // and appends the verdict and an audit line to data/local. Nothing leaves the machine.
 
 export const dynamic = "force-dynamic";
-
-const VALUES: VerdictValue[] = ["issue_confirmed", "no_issue", "cannot_tell"];
 
 function istNow(): string {
   const d = new Date(Date.now() + 330 * 60_000);
@@ -22,16 +21,10 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const body = (await req.json().catch(() => null)) as { entity?: string; itemKey?: string; verdict?: string } | null;
-  if (!body?.entity || !body.itemKey || !VALUES.includes(body.verdict as VerdictValue)) {
-    return NextResponse.json({ error: "entity, itemKey and a verdict of issue_confirmed, no_issue or cannot_tell are required" }, { status: 400 });
-  }
-  let analysis: ReturnType<typeof loadEntity>;
-  try {
-    analysis = loadEntity(body.entity);
-  } catch {
-    return NextResponse.json({ error: `no entity ${body.entity}` }, { status: 404 });
-  }
+  const body = parseVerdictRequest(await req.json().catch(() => null));
+  if (!body) return NextResponse.json({ error: VERDICT_REQUEST_ERROR }, { status: 400 });
+  if (!entityCodes().includes(body.entity)) return NextResponse.json({ error: `no entity ${body.entity}` }, { status: 404 });
+  const analysis = loadEntity(body.entity);
   const item = analysis.samples.items.find((i) => i.key === body.itemKey);
   if (!item) return NextResponse.json({ error: `${body.itemKey} is not on the ${body.entity} sample sheet` }, { status: 404 });
   const examiner = process.env.LEDGER_EXAMINER ?? "EX-02";
@@ -45,7 +38,7 @@ export async function POST(req: Request) {
     recordId: item.recordId,
     pick: item.pick,
     detectors,
-    verdict: body.verdict as VerdictValue,
+    verdict: body.verdict,
     examiner,
     recordedAt: istNow(),
     blind: true,
