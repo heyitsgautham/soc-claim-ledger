@@ -78,7 +78,7 @@ The pytest run includes the parity test that holds the SQL ledger and the TypeSc
 |---|---|
 | `pnpm test` | simulate, analyse, `test:unit`, `test:api` |
 | `pnpm coverage` | the same, with the unit tests under c8 |
-| `pnpm test:unit` | `packages/*/test/*.test.ts` through `tsx --test` |
+| `pnpm test:unit` | `packages/*/test/*.test.ts` and `apps/web/test/*.test.ts` through `tsx --test` |
 | `pnpm test:coverage` | the unit tests under c8, failing below the floors in `.c8rc.json` |
 | `pnpm test:api` | `apps/api/tests` with pytest and pytest-cov, failing below `fail_under` in `apps/api/pyproject.toml` |
 | `pnpm test:e2e` | every screen in Chromium against a running `pnpm start`, failing on any request that leaves the machine |

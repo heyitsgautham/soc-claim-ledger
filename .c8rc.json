@@ -1,7 +1,7 @@
 {
   "all": true,
-  "src": ["packages"],
-  "include": ["packages/*/src/**/*.ts"],
+  "src": ["packages", "apps/web/src/lib"],
+  "include": ["packages/*/src/**/*.ts", "apps/web/src/lib/format.ts", "apps/web/src/lib/scale.ts", "apps/web/src/lib/brand.ts"],
   "exclude": ["packages/*/src/**/cli.ts", "packages/*/src/**/types.ts", "packages/claims/src/model.ts"],
   "reporter": ["text-summary", "lcov"],
   "reports-dir": "coverage",
