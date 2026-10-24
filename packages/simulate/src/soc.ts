@@ -5,6 +5,9 @@ import { naturalNote, templatedNote } from "./notes";
 import type { Inventory } from "./inventory";
 import { behaviourIn, type EntityConfig, type Lognormal } from "./roster";
 import { Rng } from "./rng";
+import { isWeekend, rosterShifts, SHIFT_LENGTH, type Slot } from "./shifts";
+import { logSourceDays, threatHunts } from "./telemetry";
+import type { QuarterOutput, TruthLabel, TruthRow } from "./output";
 
 // Runs one quarter of a CSE's SOC. Alerts arrive on a diurnal and weekday curve,
 // L1 analysts on rotating shifts acknowledge them, P1 and some P2 and P3 detections
@@ -15,39 +18,6 @@ import { Rng } from "./rng";
 type AlertRow = RecordInput<"alerts">;
 type CaseRow = RecordInput<"cases">;
 type EscalationRow = RecordInput<"escalations">;
-type ShiftRow = RecordInput<"shifts">;
-type LogSourceRow = RecordInput<"log_sources">;
-type HuntRow = RecordInput<"threat_hunts">;
-type RuleRow = RecordInput<"rules">;
-
-// Hidden labels the simulator keeps about what its toggles did. A CSE never submits these.
-// They exist so the simulated examiner can give verdicts with a ground truth behind them,
-// and so validation can measure the detectors against it.
-export type TruthLabel =
-  | "skipped_l2"
-  | "sla_forced_close"
-  | "templated_note"
-  | "weekend_understaffed"
-  | "weekend_deferred"
-  | "auto_close_repeat"
-  | "ot_unenrolled";
-
-export interface TruthRow {
-  record: "case" | "alert" | "asset" | "shift";
-  id: string;
-  labels: TruthLabel[];
-}
-
-export interface QuarterOutput {
-  alerts: AlertRow[];
-  cases: CaseRow[];
-  escalations: EscalationRow[];
-  shifts: ShiftRow[];
-  log_sources: LogSourceRow[];
-  rules: RuleRow[];
-  threat_hunts: HuntRow[];
-  truth: TruthRow[];
-}
 
 // Relative alert volume by IST hour, and by weekday from Sunday.
 const DIURNAL = [0.55, 0.5, 0.45, 0.45, 0.45, 0.5, 0.65, 0.85, 1.1, 1.35, 1.5, 1.55, 1.5, 1.45, 1.5, 1.5, 1.4, 1.25, 1.05, 0.9, 0.8, 0.7, 0.65, 0.6];
@@ -65,21 +35,6 @@ const PRIORITY_MIX: [Priority, number][] = [
 ];
 const BURST_EXTRA: Record<Priority, number> = { P1: 0.3, P2: 0.2, P3: 0.08, P4: 0 };
 
-const SHIFT_LENGTH = 8 * HOUR;
-// Shifts run 06:00 to 14:00 (A), 14:00 to 22:00 (B) and 22:00 to 06:00 (C) IST.
-// Rotation counts from this fixed anchor so teams keep their pattern across quarters.
-const ROTATION_ANCHOR = istMidnight("2025-01-01") - 2 * HOUR;
-
-interface Slot {
-  start: number;
-  end: number;
-  rotation: number;
-  row: ShiftRow;
-  l1: string[];
-  l2: string;
-  l3: string;
-}
-
 interface Detection {
   at: number;
   priority: Priority;
@@ -94,11 +49,6 @@ interface Detection {
 interface Candidates {
   ids: string[];
   cumulative: number[];
-}
-
-function isWeekend(ms: number): boolean {
-  const d = istWeekday(ms);
-  return d === 0 || d === 6;
 }
 
 // 09:00 IST on the Monday after a weekend moment.
@@ -129,42 +79,7 @@ export function simulateQuarter(entity: EntityConfig, inventory: Inventory, quar
   const qtag = quarter.id.replace("FY", "").replace("-", ""); // 27Q1
 
   // Shifts overlapping the quarter, from the C shift that starts at 22:00 the evening before.
-  const l1 = inventory.analysts.filter((a) => a.level === "L1").map((a) => a.id);
-  const l2 = inventory.analysts.filter((a) => a.level === "L2").map((a) => a.id);
-  const l3 = inventory.analysts.filter((a) => a.level === "L3").map((a) => a.id);
-  const { l1Teams, l1PerTeam } = entity.staffing;
-  const slots: Slot[] = [];
-  for (let s = start - 2 * HOUR; s < end; s += SHIFT_LENGTH) {
-    const rotation = Math.round((s - ROTATION_ANCHOR) / SHIFT_LENGTH);
-    const team = rotation % l1Teams;
-    const rostered = l1.slice(team * l1PerTeam, team * l1PerTeam + l1PerTeam);
-    const weekendShort = behaviour.weekend !== null && isWeekend(s);
-    const onDuty = weekendShort ? rostered.slice(0, behaviour.weekend!.l1OnDuty) : rostered;
-    const hour = istHour(s);
-    const code = hour === 6 ? "A" : hour === 14 ? "B" : "C";
-    const date = istDate(s);
-    const slot: Slot = {
-      start: s,
-      end: s + SHIFT_LENGTH,
-      rotation,
-      l1: onDuty,
-      l2: l2[rotation % l2.length] as string,
-      l3: l3[Math.floor(rotation / 3) % l3.length] as string,
-      row: {
-        id: `${date}-${code}`,
-        date,
-        shift: code,
-        starts_at: toIst(s),
-        ends_at: toIst(s + SHIFT_LENGTH),
-        l1_on_duty: onDuty,
-        l2_on_call: null,
-        l3_on_call: null,
-      },
-    };
-    slot.row.l2_on_call = slot.l2;
-    slot.row.l3_on_call = slot.l3;
-    slots.push(slot);
-  }
+  const slots = rosterShifts(inventory, entity.staffing, behaviour.weekend, start, end);
   const truth: TruthRow[] = [];
   for (const slot of slots) {
     if (behaviour.weekend && isWeekend(slot.start)) truth.push({ record: "shift", id: slot.row.id, labels: ["weekend_understaffed"] });
@@ -553,48 +468,8 @@ export function simulateQuarter(entity: EntityConfig, inventory: Inventory, quar
   for (const p of pending) p.row.case_id = caseByDetection.get(p.detection) ?? null;
   escalations.sort((a, b2) => (a.escalated_at < b2.escalated_at ? -1 : a.escalated_at > b2.escalated_at ? 1 : 0));
 
-  // Log sources and how many days each one reported this quarter.
-  const telemetry = root.fork("telemetry");
-  const outages = new Set<string>();
-  const outageable = inventory.sources.filter((s) => !s.aggregate);
-  while (outages.size < Math.min(h.logSourceOutages, outageable.length)) outages.add(telemetry.pick(outageable).id);
-  const log_sources: LogSourceRow[] = inventory.sources.map((s) => {
-    const full = days;
-    let reporting = full;
-    if (outages.has(s.id)) reporting = full - telemetry.int(6, 22);
-    else if (telemetry.chance(0.08)) reporting = full - 1;
-    return {
-      id: s.id,
-      name: s.name,
-      kind: s.kind,
-      asset_class: s.asset_class,
-      onboarded_on: s.onboarded_on,
-      days_expected: full,
-      days_reporting: reporting,
-    };
-  });
-
-  // Threat hunts, whether or not the CSE hands over the log.
-  const hunting = root.fork("hunts");
-  const hypotheses: [string, string][] = [
-    ["Dormant admin accounts reused after 90 days", "T1078.002"],
-    ["Living-off-the-land binaries on jump hosts", "T1218"],
-    ["DNS tunnelling from server VLANs", "T1071.004"],
-    ["Unsigned drivers loaded on engineering workstations", "T1014"],
-    ["Beacon-like periodicity in proxy logs", "T1071.001"],
-    ["Persistence through WMI event subscriptions", "T1546.003"],
-  ];
-  const threat_hunts: HuntRow[] = [];
-  for (let i = 0; i < b.threatHuntsPerQuarter; i++) {
-    const [hypothesis, technique] = hypotheses[(i + hunting.int(0, hypotheses.length - 1)) % hypotheses.length]!;
-    threat_hunts.push({
-      id: `${short}-${qtag}-H${String(i + 1).padStart(2, "0")}`,
-      started_on: addDays(quarter.start, Math.floor(((i + 0.5) * days) / b.threatHuntsPerQuarter)),
-      hypothesis,
-      technique,
-      outcome: hunting.weighted(["no_finding", "finding_raised", "detection_improved"] as const, (o) => (o === "no_finding" ? 5 : 2)),
-    });
-  }
+  const log_sources = logSourceDays(root, inventory, days, h.logSourceOutages);
+  const threat_hunts = threatHunts(root, quarter, days, b.threatHuntsPerQuarter, short, qtag);
 
   return {
     alerts: pending.map((p) => p.row),

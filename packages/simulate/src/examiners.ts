@@ -6,7 +6,7 @@ import type { DetectorId } from "@ledger/detect";
 import { submissionDir } from "@ledger/submission";
 import { DAY, HOUR, istMidnight, MINUTE, QUARTERS, toIst } from "./calendar";
 import { Rng } from "./rng";
-import type { TruthLabel, TruthRow } from "./soc";
+import type { TruthLabel, TruthRow } from "./output";
 import { TRUTH_FILE } from "./writer";
 
 // Examiner verdicts on past sample sheets, so calibration has history. For each past
