@@ -198,7 +198,12 @@ function assetsMonitored(
         { key: "seen", label: "Alert or telemetry recorded", count: seen.length, tone: "evidence" },
         { key: "silent", label: "No alert and no telemetry", count: silent.length, tone: "gap" },
       ]),
-      { type: "assets", id: "assets", title: silent.length ? `${silent.length} ${noun} the SIEM never saw` : `All ${noun}`, rows: silent.length ? silent : rows },
+      {
+        type: "assets",
+        id: "assets",
+        title: silent.length ? `${silent.length} ${noun} the SIEM never saw` : `All ${noun}`,
+        rows: silent.length ? silent : rows,
+      },
     ],
   };
 }
@@ -262,8 +267,24 @@ export const CATALOGUE: Record<Metric, MetricDefinition> = {
             .sort((x, y) => x.openedAt - y.openedAt || (x.caseId < y.caseId ? -1 : 1))
             .map((r) => (r.escalatedAfterMin === null ? "none" : r.escalatedAfterMin <= 30 ? "within" : "late")),
         ),
-        { type: "cases", id: "no-escalation", title: `${none.length} critical alerts with no escalation record`, tab: `No escalation record · ${none.length}`, rows: none, timelineMinutes: sla + 60, markers },
-        { type: "cases", id: "late-escalation", title: `${late.length} critical alerts escalated after 30 minutes`, tab: `Escalated late · ${late.length}`, rows: late, timelineMinutes: sla + 60, markers },
+        {
+          type: "cases",
+          id: "no-escalation",
+          title: `${none.length} critical alerts with no escalation record`,
+          tab: `No escalation record · ${none.length}`,
+          rows: none,
+          timelineMinutes: sla + 60,
+          markers,
+        },
+        {
+          type: "cases",
+          id: "late-escalation",
+          title: `${late.length} critical alerts escalated after 30 minutes`,
+          tab: `Escalated late · ${late.length}`,
+          rows: late,
+          timelineMinutes: sla + 60,
+          markers,
+        },
       ];
       if (hist) evidence.push(hist.section);
       // Closure notes of the unescalated cases, run through the templated-notes detector.
@@ -329,15 +350,38 @@ export const CATALOGUE: Record<Metric, MetricDefinition> = {
         matched: null,
         reference: { label: "SLA", measure: seconds(sla) },
         subjects: { cases: [...bunched, ...breached].map((r) => r.caseId) },
-        finding: [bunched.length, " of ", closed.length, ` critical alerts closed in the ${bucket} minutes before the SLA, and `, breached.length, " closed after it."],
+        finding: [
+          bunched.length,
+          " of ",
+          closed.length,
+          ` critical alerts closed in the ${bucket} minutes before the SLA, and `,
+          breached.length,
+          " closed after it.",
+        ],
         evidence: [
           breakdown("close-timing", "When the critical alerts closed", "closed critical alerts", [
             { key: "early", label: `More than ${bucket} min before SLA`, count: closed.length - bunched.length - breached.length, tone: "evidence" },
             { key: "bunched", label: `In the ${bucket} min before SLA`, count: bunched.length, tone: "gap" },
             { key: "breached", label: "After SLA", count: breached.length, tone: "gap_soft" },
           ]),
-          { type: "cases", id: "bunched", title: `${bunched.length} critical alerts closed in the ${bucket} minutes before SLA`, tab: `Closed just under SLA · ${bunched.length}`, rows: bunched, timelineMinutes: sla + 60, markers },
-          { type: "cases", id: "breached", title: `${breached.length} critical alerts closed after SLA`, tab: `Closed after SLA · ${breached.length}`, rows: breached, timelineMinutes: Math.max(sla + 60, ...breached.map((r) => r.closedAfterMin! + 15)), markers },
+          {
+            type: "cases",
+            id: "bunched",
+            title: `${bunched.length} critical alerts closed in the ${bucket} minutes before SLA`,
+            tab: `Closed just under SLA · ${bunched.length}`,
+            rows: bunched,
+            timelineMinutes: sla + 60,
+            markers,
+          },
+          {
+            type: "cases",
+            id: "breached",
+            title: `${breached.length} critical alerts closed after SLA`,
+            tab: `Closed after SLA · ${breached.length}`,
+            rows: breached,
+            timelineMinutes: Math.max(sla + 60, ...breached.map((r) => r.closedAfterMin! + 15)),
+            markers,
+          },
           hist.section,
         ],
       };
@@ -419,7 +463,8 @@ export const CATALOGUE: Record<Metric, MetricDefinition> = {
     tolerance: PCT,
     requires: ["alerts"],
     lookbackQuarters: 1,
-    method: "Share of all medium-severity alerts raised in the quarter that an analyst acknowledged within 4 hours. Alerts never acknowledged count against the claim.",
+    method:
+      "Share of all medium-severity alerts raised in the quarter that an analyst acknowledged within 4 hours. Alerts never acknowledged count against the claim.",
     compute(ctx) {
       const alerts = current(ctx)
         .records("alerts")
@@ -551,7 +596,8 @@ export const CATALOGUE: Record<Metric, MetricDefinition> = {
     tolerance: PCT,
     requires: ["cases"],
     lookbackQuarters: 1,
-    method: "Share of closed medium-severity cases whose recorded disposition is false positive. Cases closed without a disposition are left out of both counts.",
+    method:
+      "Share of closed medium-severity cases whose recorded disposition is false positive. Cases closed without a disposition are left out of both counts.",
     compute(ctx) {
       const closed = closedCases(current(ctx), "P3").filter((c) => c.disposition !== null);
       if (!closed.length) return { empty: "closed medium-severity cases" };
@@ -569,7 +615,12 @@ export const CATALOGUE: Record<Metric, MetricDefinition> = {
             "closed medium-severity cases",
             [...counts.entries()]
               .sort((a, b) => b[1] - a[1])
-              .map(([d, n]) => ({ key: d, label: dispositionLabel(d as Disposition), count: n, tone: d === "false_positive" ? ("gap_soft" as const) : ("muted" as const) })),
+              .map(([d, n]) => ({
+                key: d,
+                label: dispositionLabel(d as Disposition),
+                count: n,
+                tone: d === "false_positive" ? ("gap_soft" as const) : ("muted" as const),
+              })),
           ),
         ],
       };

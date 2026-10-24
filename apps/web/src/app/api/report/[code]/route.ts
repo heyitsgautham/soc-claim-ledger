@@ -41,7 +41,13 @@ export async function POST(req: Request, { params }: { params: Promise<{ code: s
     writeFileSync(path.join(dir, file), pdf);
     const pages = (pdf.toString("latin1").match(/\/Type\s*\/Page\b/g) ?? []).length;
     const sha256 = createHash("sha256").update(pdf).digest("hex");
-    recordAudit({ at: istNow(), actor: process.env.LEDGER_EXAMINER ?? "EX-02", action: "report_exported", subject: `${code} ${file}`, detail: `${pages} pages, SHA-256 ${sha256.slice(0, 16)}` });
+    recordAudit({
+      at: istNow(),
+      actor: process.env.LEDGER_EXAMINER ?? "EX-02",
+      action: "report_exported",
+      subject: `${code} ${file}`,
+      detail: `${pages} pages, SHA-256 ${sha256.slice(0, 16)}`,
+    });
     return NextResponse.json({ file, pages, bytes: pdf.length, sha256, seconds: (performance.now() - started) / 1000, href: `/api/report/${code}` });
   } catch (e) {
     return NextResponse.json({ error: e instanceof Error ? e.message : String(e) }, { status: 500 });

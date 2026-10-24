@@ -3,14 +3,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import { gunzipSync, gzipSync } from "node:zlib";
 import { EXPORT_NAMES, type ExportName } from "./constants";
-import {
-  type ExportEntry,
-  type Manifest,
-  ManifestSchema,
-  RECORD_SCHEMAS,
-  type RecordInput,
-  type RecordOf,
-} from "./schema";
+import { type ExportEntry, type Manifest, ManifestSchema, RECORD_SCHEMAS, type RecordInput, type RecordOf } from "./schema";
 
 // On disk a submission is one folder per entity per quarter.
 //
@@ -65,9 +58,7 @@ export function decodeExport<N extends ExportName>(name: N, bytes: Buffer, sourc
     const parsed = schema.safeParse(raw);
     if (!parsed.success) {
       const issue = parsed.error.issues[0];
-      throw new SubmissionError(
-        `${source}: line ${i + 1} fails the ${name} schema at ${issue?.path.join(".") || "(root)"}: ${issue?.message}`,
-      );
+      throw new SubmissionError(`${source}: line ${i + 1} fails the ${name} schema at ${issue?.path.join(".") || "(root)"}: ${issue?.message}`);
     }
     rows.push(parsed.data as RecordOf<N>);
   }

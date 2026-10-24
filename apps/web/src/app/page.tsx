@@ -28,7 +28,8 @@ export default function PortfolioPage() {
           <div className="flex flex-col gap-3">
             <span className="label-caps">Portfolio · {p.cycleLabel}</span>
             <h1 className="font-serif text-[31px] leading-[1.18] text-ink" data-testid="headline">
-              <span className="num font-semibold text-gap">{withFindings}</span> of <span className="num">{p.entries.length}</span> entities have findings this cycle.
+              <span className="num font-semibold text-gap">{withFindings}</span> of <span className="num">{p.entries.length}</span> entities have findings this
+              cycle.
               {first.length > 0 && <> Start with {list(first)}.</>}
             </h1>
             <p className="text-[14.5px] leading-snug text-ink-2">
@@ -36,8 +37,8 @@ export default function PortfolioPage() {
               {untested.length > 0 && (
                 <>
                   {" "}
-                  {list(untested.map((e) => e.code))} left an export out, so <span className="num">{untestedClaims}</span> claim{untestedClaims === 1 ? " was" : "s were"} not
-                  tested.
+                  {list(untested.map((e) => e.code))} left an export out, so <span className="num">{untestedClaims}</span> claim
+                  {untestedClaims === 1 ? " was" : "s were"} not tested.
                 </>
               )}
             </p>

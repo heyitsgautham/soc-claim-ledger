@@ -17,22 +17,10 @@ import { Tally } from "./tally";
 
 type TableSection = Extract<EvidenceSection, { type: "cases" | "assets" | "sources" | "notes" }>;
 
-export function EvidenceDrawer({
-  assessment,
-  evaluation,
-  onClose,
-}: {
-  assessment: Assessment;
-  evaluation: ClaimEvaluation | null;
-  onClose: () => void;
-}) {
+export function EvidenceDrawer({ assessment, evaluation, onClose }: { assessment: Assessment; evaluation: ClaimEvaluation | null; onClose: () => void }) {
   return (
     <Sheet open={evaluation !== null} onOpenChange={(open) => !open && onClose()}>
-      <SheetContent
-        className="w-[min(1290px,calc(100vw-150px))]"
-        data-testid="evidence-drawer"
-        onOpenAutoFocus={(e) => e.preventDefault()}
-      >
+      <SheetContent className="w-[min(1290px,calc(100vw-150px))]" data-testid="evidence-drawer" onOpenAutoFocus={(e) => e.preventDefault()}>
         {evaluation && <DrawerBody key={evaluation.claim.ref} assessment={assessment} evaluation={evaluation} />}
       </SheetContent>
     </Sheet>
@@ -106,9 +94,7 @@ function DrawerBody({ assessment: a, evaluation: e }: { assessment: Assessment; 
             tone={untestable ? "muted" : "evidence"}
             caption={untestable ? "records not submitted" : `${basis(e, false)}, ${windowLabel}`}
           />
-          {!untestable && (
-            <Figure label={isGap ? "Gap" : "Difference"} value={varianceParts(e)} tone={isGap ? "gap" : "ink"} caption={toleranceLabel(e)} />
-          )}
+          {!untestable && <Figure label={isGap ? "Gap" : "Difference"} value={varianceParts(e)} tone={isGap ? "gap" : "ink"} caption={toleranceLabel(e)} />}
         </div>
 
         {e.finding && (
@@ -135,7 +121,12 @@ function DrawerBody({ assessment: a, evaluation: e }: { assessment: Assessment; 
                   <div className="mb-3 flex items-baseline justify-between gap-6 border-b border-rule pb-2">
                     <span className="font-serif text-[18px] leading-none text-ink">{active.tab ?? active.title}</span>
                     {histogram && (
-                      <button type="button" onClick={() => setTab(null)} className="text-[12.5px] leading-none text-ink-2 underline decoration-rule underline-offset-4 hover:text-ink" data-testid="records-back">
+                      <button
+                        type="button"
+                        onClick={() => setTab(null)}
+                        className="text-[12.5px] leading-none text-ink-2 underline decoration-rule underline-offset-4 hover:text-ink"
+                        data-testid="records-back"
+                      >
                         Back to the chart
                       </button>
                     )}
@@ -200,17 +191,7 @@ function toleranceLabel(e: ClaimEvaluation): string {
   return "must match exactly";
 }
 
-function Figure({
-  label,
-  value,
-  tone,
-  caption,
-}: {
-  label: string;
-  value: string | Part[];
-  tone: "ink" | "evidence" | "gap" | "muted";
-  caption: string;
-}) {
+function Figure({ label, value, tone, caption }: { label: string; value: string | Part[]; tone: "ink" | "evidence" | "gap" | "muted"; caption: string }) {
   return (
     <div className="flex flex-col gap-[10px]">
       <span className="label-caps">{label}</span>
@@ -237,36 +218,36 @@ function Method({ evaluation: e }: { evaluation: ClaimEvaluation }) {
       <h4 className="font-serif text-[16px] leading-none text-ink">How this was recomputed</h4>
       <p className="text-[13px] leading-[1.5] text-ink-2">{e.method}</p>
       {e.exportsUsed.length > 0 && (
-      <table className="w-full text-[12px] leading-none">
-        <thead>
-          <tr className="border-b border-rule text-left">
-            <th className="label-caps !text-[10px] pb-[6px] font-medium">Export</th>
-            <th className="label-caps !text-[10px] pb-[6px] font-medium">Quarter</th>
-            <th className="label-caps !text-[10px] pb-[6px] text-right font-medium">Rows</th>
-            <th className="label-caps !text-[10px] pb-[6px] pl-3 font-medium">SHA-256</th>
-          </tr>
-        </thead>
-        <tbody>
-          {e.exportsUsed.map((x) => (
-            <tr key={`${x.quarter}-${x.name}`} className="border-b border-rule-soft">
-              <td className="num py-[6px] text-ink">{x.name}</td>
-              <td className="num py-[6px] text-ink-2">{x.quarter}</td>
-              <td className="num py-[6px] text-right text-ink">{int(x.rows)}</td>
-              <td className="num py-[6px] pl-3 text-ink-3">{x.sha256.slice(0, 12)}</td>
+        <table className="w-full text-[12px] leading-none">
+          <thead>
+            <tr className="border-b border-rule text-left">
+              <th className="label-caps !text-[10px] pb-[6px] font-medium">Export</th>
+              <th className="label-caps !text-[10px] pb-[6px] font-medium">Quarter</th>
+              <th className="label-caps !text-[10px] pb-[6px] text-right font-medium">Rows</th>
+              <th className="label-caps !text-[10px] pb-[6px] pl-3 font-medium">SHA-256</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {e.exportsUsed.map((x) => (
+              <tr key={`${x.quarter}-${x.name}`} className="border-b border-rule-soft">
+                <td className="num py-[6px] text-ink">{x.name}</td>
+                <td className="num py-[6px] text-ink-2">{x.quarter}</td>
+                <td className="num py-[6px] text-right text-ink">{int(x.rows)}</td>
+                <td className="num py-[6px] pl-3 text-ink-3">{x.sha256.slice(0, 12)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       )}
       <p className="num text-[11.5px] leading-snug text-ink-3">
         Rule {e.rule.id} {e.rule.version}
       </p>
       {e.exportsUsed.length > 0 && (
-      <p className="border-l-2 border-ink-4 pl-3 text-[12.5px] leading-[1.5] text-ink-2">
-        {complete
-          ? "Observation, not verdict. Every export this reads was submitted and declared complete by the entity, so an absent record describes the submission as filed. What it means is the examiner's call."
-          : "Some exports this reads were declared incomplete, so absent records here may be missing from the file rather than from the SOC."}
-      </p>
+        <p className="border-l-2 border-ink-4 pl-3 text-[12.5px] leading-[1.5] text-ink-2">
+          {complete
+            ? "Observation, not verdict. Every export this reads was submitted and declared complete by the entity, so an absent record describes the submission as filed. What it means is the examiner's call."
+            : "Some exports this reads were declared incomplete, so absent records here may be missing from the file rather than from the SOC."}
+        </p>
       )}
     </section>
   );
@@ -282,16 +263,15 @@ function UntestableBody({ evaluation: e, assessment: a }: { evaluation: ClaimEva
         <p className="max-w-[620px] text-[14.5px] leading-[1.55] text-ink-2">
           {r?.kind === "missing_export" && (
             <>
-              The claim is tested against the <span className="num text-ink">{r.exports.join(", ")}</span> export, and the {quarterLabels(a, r.quarters)} submission from{" "}
-              {a.entity.code} does not include it. The ledger marks this as insufficient evidence rather than a gap, because a missing file says nothing yet about
-              the SOC. Request the export before drawing any conclusion.
+              The claim is tested against the <span className="num text-ink">{r.exports.join(", ")}</span> export, and the {quarterLabels(a, r.quarters)}{" "}
+              submission from {a.entity.code} does not include it. The ledger marks this as insufficient evidence rather than a gap, because a missing file says
+              nothing yet about the SOC. Request the export before drawing any conclusion.
             </>
           )}
           {r?.kind === "partial_export" && (
             <>
               The entity declared the <span className="num text-ink">{r.exports.join(", ")}</span> export incomplete in its {quarterLabels(a, r.quarters)}{" "}
-              submission, so records missing from it cannot be read as
-              work that never happened.
+              submission, so records missing from it cannot be read as work that never happened.
             </>
           )}
           {r?.kind === "short_window" && (

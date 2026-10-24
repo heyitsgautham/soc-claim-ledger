@@ -15,8 +15,8 @@ export function SilentAssets({ assets, quarters }: { assets: Silent; quarters: s
     <section className="mt-6" data-testid="silent-assets">
       <div className="flex items-center justify-between gap-8">
         <h2 className="font-serif text-[18px] leading-none text-ink">
-          <span className="num text-gap">{int(assets.length)}</span> assets raised nothing across {quarters}, <span className="num text-gap">{int(critical)}</span> of them
-          critical
+          <span className="num text-gap">{int(assets.length)}</span> assets raised nothing across {quarters},{" "}
+          <span className="num text-gap">{int(critical)}</span> of them critical
         </h2>
         <button
           type="button"

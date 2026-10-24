@@ -36,7 +36,10 @@ export function SubmissionOverview({ assessment: a, overview: o, onOpen }: { ass
     : [];
 
   return (
-    <main className="mx-auto flex min-h-[calc(100vh-53px-var(--footer-height))] max-w-[1920px] flex-col px-8 pb-4 min-[1680px]:px-12" data-testid="submission-overview">
+    <main
+      className="mx-auto flex min-h-[calc(100vh-53px-var(--footer-height))] max-w-[1920px] flex-col px-8 pb-4 min-[1680px]:px-12"
+      data-testid="submission-overview"
+    >
       <header className="flex items-end justify-between gap-10 pt-6 pb-3">
         <div className="flex flex-col gap-[10px]">
           <span className="label-caps">Quarterly submission · {a.quarter.label}</span>
@@ -64,7 +67,10 @@ export function SubmissionOverview({ assessment: a, overview: o, onOpen }: { ass
                   <li key={s.label} className="anim-settle relative grid grid-cols-[22px_minmax(0,1fr)] gap-x-2 pb-[14px]" style={at(STEP_MS[i]! - 150)}>
                     {i < steps.length - 1 && <span className="absolute top-[14px] bottom-0 left-[6px] w-px bg-rule" aria-hidden />}
                     <span
-                      className={cn("anim-appear relative mt-[3px] size-[13px] rounded-full border-2", i === 2 ? "border-evidence bg-evidence" : "border-ink bg-ink")}
+                      className={cn(
+                        "anim-appear relative mt-[3px] size-[13px] rounded-full border-2",
+                        i === 2 ? "border-evidence bg-evidence" : "border-ink bg-ink",
+                      )}
                       style={at(STEP_MS[i]!)}
                       aria-hidden
                     />

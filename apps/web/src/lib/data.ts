@@ -43,13 +43,19 @@ export function loadCalibrationHistory(): Calibration {
 export function verdictHistory(): Verdict[] {
   const file = path.join(dataDir(), "verdicts/history.ndjson");
   if (!existsSync(file)) return [];
-  return readFileSync(file, "utf8").split("\n").filter(Boolean).map((l) => JSON.parse(l) as Verdict);
+  return readFileSync(file, "utf8")
+    .split("\n")
+    .filter(Boolean)
+    .map((l) => JSON.parse(l) as Verdict);
 }
 
 function readLines<T>(name: string): T[] {
   const file = path.join(localDir(), name);
   if (!existsSync(file)) return [];
-  return readFileSync(file, "utf8").split("\n").filter(Boolean).map((l) => JSON.parse(l) as T);
+  return readFileSync(file, "utf8")
+    .split("\n")
+    .filter(Boolean)
+    .map((l) => JSON.parse(l) as T);
 }
 
 function appendLine(name: string, row: unknown) {

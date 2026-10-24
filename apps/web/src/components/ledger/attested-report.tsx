@@ -87,16 +87,20 @@ export function AttestedReport({ assessment: a, phase, onCheck }: { assessment: 
                 {a.entity.description}, <span className="num">{a.entity.sites}</span> sites · reporting period {period(a.quarter.start, a.quarter.end)}
               </p>
             </div>
-            <div
-              className="mt-1 flex -rotate-[4deg] flex-col items-center gap-[3px] border-[3px] border-double border-ink-3/70 px-3 py-[6px] text-ink-3"
-            >
+            <div className="mt-1 flex -rotate-[4deg] flex-col items-center gap-[3px] border-[3px] border-double border-ink-3/70 px-3 py-[6px] text-ink-3">
               <span className="text-[10.5px] leading-none font-semibold tracking-[0.18em] uppercase">Submitted to NCIIPC</span>
               <span className="num text-[12px] leading-none tracking-[0.08em] uppercase">{day(a.submittedOn)}</span>
             </div>
           </div>
           <span />
           <span />
-          <MarginHead phase={phase} onCheck={onCheck} code={a.entity.code} reading={reading.map((n) => [n, rows(n)!] as const)} counts={{ gaps, untestable, holds, total: ev.length }} />
+          <MarginHead
+            phase={phase}
+            onCheck={onCheck}
+            code={a.entity.code}
+            reading={reading.map((n) => [n, rows(n)!] as const)}
+            counts={{ gaps, untestable, holds, total: ev.length }}
+          />
         </div>
 
         {/* column heads */}
@@ -253,7 +257,11 @@ function Line({ evaluation: e, running, at: t }: { evaluation: ClaimEvaluation; 
           Met
         </span>
         {running && isGap && (
-          <span className="anim-strike pointer-events-none absolute top-1/2 -right-2 left-[34px] h-[2px] -translate-y-1/2 bg-gap" style={at((t ?? 0) + 140)} aria-hidden />
+          <span
+            className="anim-strike pointer-events-none absolute top-1/2 -right-2 left-[34px] h-[2px] -translate-y-1/2 bg-gap"
+            style={at((t ?? 0) + 140)}
+            aria-hidden
+          />
         )}
       </span>
       <span />

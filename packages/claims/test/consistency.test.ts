@@ -41,10 +41,17 @@ test("P-04's grid says 58 OT assets of which 38 are critical, as the ledger's 38
 test("findings run most severe first, and P-04's escalation gap sits at the top", () => {
   const a = JSON.parse(readFileSync(path.join(data, "derived/entities/P-04.json"), "utf8")) as EntityAnalysis;
   const sev = a.findings.map((f) => f.severity);
-  assert.deepEqual(sev, [...sev].sort((x, y) => y - x), "findings are in severity order");
+  assert.deepEqual(
+    sev,
+    [...sev].sort((x, y) => y - x),
+    "findings are in severity order",
+  );
   const i = a.findings.findIndex((f) => f.claimRef === "1.1");
   assert.ok(i >= 0 && i <= 1, `claim 1.1 ranks ${i + 1}, expected first or second`);
   assert.ok(a.findings[i]!.severity >= 0.9, "a 39-point miss on a P1 control is severe");
   const detectorOnly = a.findings.filter((f) => f.detector.id !== "claim-gap").map((f) => f.severity);
-  assert.ok(detectorOnly.every((s) => s <= a.findings[i]!.severity), "no behavioural signal outranks the direct control failure");
+  assert.ok(
+    detectorOnly.every((s) => s <= a.findings[i]!.severity),
+    "no behavioural signal outranks the direct control failure",
+  );
 });

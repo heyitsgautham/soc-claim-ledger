@@ -120,8 +120,6 @@ export class Rng {
   triangular(min: number, mode: number, max: number): number {
     const u = this.next();
     const cut = (mode - min) / (max - min);
-    return u < cut
-      ? min + Math.sqrt(u * (max - min) * (mode - min))
-      : max - Math.sqrt((1 - u) * (max - min) * (max - mode));
+    return u < cut ? min + Math.sqrt(u * (max - min) * (mode - min)) : max - Math.sqrt((1 - u) * (max - min) * (max - mode));
   }
 }

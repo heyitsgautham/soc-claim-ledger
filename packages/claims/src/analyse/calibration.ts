@@ -55,7 +55,13 @@ export function calibrate(verdicts: readonly Verdict[], cycles: CycleRef[], extr
   for (const id of DETECTOR_IDS) {
     for (const ver of DETECTORS[id].versions) {
       const cycle = cycles.find((c) => c.id === ver.from);
-      audit.push({ at: `${cycleStartIso(ver.from)}T09:00:00+05:30`, actor: "SYSTEM", action: "detector_released", subject: `${id} ${ver.version}`, detail: ver.change + (cycle ? `, first used in ${cycle.label}` : "") });
+      audit.push({
+        at: `${cycleStartIso(ver.from)}T09:00:00+05:30`,
+        actor: "SYSTEM",
+        action: "detector_released",
+        subject: `${id} ${ver.version}`,
+        detail: ver.change + (cycle ? `, first used in ${cycle.label}` : ""),
+      });
     }
   }
   audit.sort((a, b) => (a.at < b.at ? 1 : a.at > b.at ? -1 : a.subject < b.subject ? -1 : 1));

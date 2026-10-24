@@ -72,9 +72,7 @@ export function LedgerTable({
         return (
           <div key={group.status} data-testid={`ledger-group-${group.status}`}>
             <div className="flex items-baseline gap-3 border-b border-ink/70 pt-5 pb-[7px]">
-              <h3 className={cn("font-serif text-[17px] leading-none font-medium", group.status === "gap" ? "text-gap" : "text-ink")}>
-                {group.title}
-              </h3>
+              <h3 className={cn("font-serif text-[17px] leading-none font-medium", group.status === "gap" ? "text-gap" : "text-ink")}>{group.title}</h3>
               <span className="num text-[13px] leading-none text-ink-3">{rows.length}</span>
               <span className="text-[12.5px] leading-none text-ink-3">{group.note}</span>
             </div>
@@ -124,9 +122,7 @@ function HoldRow({ evaluation: e, selected, onOpen }: { evaluation: ClaimEvaluat
       >
         <span className="num text-[12.5px] leading-none text-ink-3">{e.claim.ref}</span>
         <span className="truncate font-serif text-[15px] leading-none text-ink">
-          <span className="inline-block max-w-full">
-            {e.claim.text}
-          </span>
+          <span className="inline-block max-w-full">{e.claim.text}</span>
         </span>
         <span className="flex items-baseline gap-2 text-[15px] leading-none whitespace-nowrap">
           <span className="inline-block">
@@ -174,11 +170,7 @@ function LedgerRow({
       >
         {/* selection rule in the margin */}
         <span
-          className={cn(
-            "absolute top-0 bottom-0 -left-4 w-[3px] transition-opacity",
-            isGap ? "bg-gap" : "bg-ink",
-            selected ? "opacity-100" : "opacity-0",
-          )}
+          className={cn("absolute top-0 bottom-0 -left-4 w-[3px] transition-opacity", isGap ? "bg-gap" : "bg-ink", selected ? "opacity-100" : "opacity-0")}
         />
 
         <span className={cn("flex flex-col gap-[5px]", major ? "self-start pt-[3px]" : "self-center")}>
@@ -239,11 +231,7 @@ function LedgerRow({
           >
             Evidence
           </span>
-          <ChevronRight
-            className={cn("size-4 transition-colors", selected ? "text-ink" : "text-ink-4 group-hover/row:text-ink")}
-            strokeWidth={2}
-            aria-hidden
-          />
+          <ChevronRight className={cn("size-4 transition-colors", selected ? "text-ink" : "text-ink-4 group-hover/row:text-ink")} strokeWidth={2} aria-hidden />
         </span>
       </button>
     </li>

@@ -59,7 +59,11 @@ function Cell({ c, wave, flip }: { c: GridCell; wave: number; flip: number }) {
           <span className="text-[10.5px] leading-none tracking-[0.08em] text-ink-3 uppercase">expected</span>
           <span className="num text-[18px] leading-none text-ink-2">{int(expected ?? 0)}</span>
         </div>
-        <div className="anim-flip hatch-gap-soft absolute inset-0 flex flex-col items-center justify-center gap-[6px] border-2 border-gap" style={delay(flip)} data-flip>
+        <div
+          className="anim-flip hatch-gap-soft absolute inset-0 flex flex-col items-center justify-center gap-[6px] border-2 border-gap"
+          style={delay(flip)}
+          data-flip
+        >
           <span className="num text-[24px] leading-none font-semibold text-gap">0</span>
           <span className="num bg-paper-sheet px-1 text-[11px] leading-none font-medium text-gap">exp {int(expected ?? 0)}</span>
         </div>

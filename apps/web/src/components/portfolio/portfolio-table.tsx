@@ -100,7 +100,9 @@ function Row({ e, i }: { e: PortfolioEntry; i: number }) {
           </span>
         </span>
         <span className="flex items-center gap-3">
-          <span className={cn("num w-[36px] text-right text-[24px] leading-none font-semibold", hot ? "text-gap" : e.risk ? "text-ink" : "text-ink-4")}>{e.risk}</span>
+          <span className={cn("num w-[36px] text-right text-[24px] leading-none font-semibold", hot ? "text-gap" : e.risk ? "text-ink" : "text-ink-4")}>
+            {e.risk}
+          </span>
           <span className="relative h-[8px] flex-1 bg-rule-soft">
             <span
               className={cn("anim-draw-x absolute inset-y-0 left-0 origin-left", hot ? "bg-gap" : "bg-ink-2")}

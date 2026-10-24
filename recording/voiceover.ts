@@ -31,7 +31,28 @@ function clock(s: number): string {
   return `${Math.floor(whole / 60)}:${String(whole % 60).padStart(2, "0")}${tenth ? `.${tenth}` : ""}`;
 }
 
-const ONES = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"];
+const ONES = [
+  "zero",
+  "one",
+  "two",
+  "three",
+  "four",
+  "five",
+  "six",
+  "seven",
+  "eight",
+  "nine",
+  "ten",
+  "eleven",
+  "twelve",
+  "thirteen",
+  "fourteen",
+  "fifteen",
+  "sixteen",
+  "seventeen",
+  "eighteen",
+  "nineteen",
+];
 const TENS = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
 
 // How a number is said aloud, so a line's pace counts what the reader actually says.
@@ -48,7 +69,15 @@ export function spoken(line: string): string {
   for (const [re, said] of SAY) out = out.replace(re, said);
   return out.replace(/\d[\d,]*(\.\d+)?/g, (m) => {
     const [whole, frac] = m.replace(/,/g, "").split(".");
-    return sayNumber(Number(whole)) + (frac ? ` point ${frac.split("").map((d) => ONES[Number(d)]).join(" ")}` : "");
+    return (
+      sayNumber(Number(whole)) +
+      (frac
+        ? ` point ${frac
+            .split("")
+            .map((d) => ONES[Number(d)])
+            .join(" ")}`
+        : "")
+    );
   });
 }
 

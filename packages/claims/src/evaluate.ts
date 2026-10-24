@@ -1,14 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
-import {
-  type ExportName,
-  listQuarters,
-  loadSubmission,
-  type Manifest,
-  type Submission,
-  SubmissionError,
-  submissionDir,
-} from "@ledger/submission";
+import { type ExportName, listQuarters, loadSubmission, type Manifest, type Submission, SubmissionError, submissionDir } from "@ledger/submission";
 import { CATALOGUE } from "./catalogue";
 import { Indexed } from "./context";
 import { type AttestedClaim, CLAIMS_FILE, type ClaimsFile, ClaimsFileSchema, type Measure } from "./schema";
@@ -64,7 +56,9 @@ function evaluateClaim(claim: AttestedClaim, window: Indexed[], rulesCycle?: str
   const sector = window[0]?.submission.manifest.entity.sector;
   const base = {
     claim,
-    basis: (def.basis ?? []).filter((b) => !b.sectors || (sector !== undefined && b.sectors.includes(sector))).map(({ source, clause, says }) => ({ source, clause, says })),
+    basis: (def.basis ?? [])
+      .filter((b) => !b.sectors || (sector !== undefined && b.sectors.includes(sector)))
+      .map(({ source, clause, says }) => ({ source, clause, says })),
     direction: def.direction,
     tolerance: def.tolerance,
     kind: def.kind,
@@ -197,7 +191,10 @@ export function assessLatest(dataDir: string, entity: string, quarter?: string):
   if (!target || !quarters.includes(target)) throw new SubmissionError(`no submission for ${entity} ${quarter ?? ""} in ${dataDir}`);
   // Only load as far back as the longest lookback any metric needs.
   const depth = Math.max(...Object.values(CATALOGUE).map((d) => d.lookbackQuarters));
-  const upTo = quarters.slice(0, quarters.indexOf(target) + 1).reverse().slice(0, depth);
+  const upTo = quarters
+    .slice(0, quarters.indexOf(target) + 1)
+    .reverse()
+    .slice(0, depth);
   const submissions = upTo.map((q) => loadSubmission(submissionDir(dataDir, entity, q)));
   return assess(loadClaimsFile(submissionDir(dataDir, entity, target)), submissions);
 }

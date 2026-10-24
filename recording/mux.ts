@@ -71,7 +71,9 @@ function main() {
   if (!placed.length) throw new Error(`no lines in ${path.relative(process.cwd(), dir)}`);
 
   // Every line delayed to its start, mixed without level changes, then one loudness pass.
-  const delays = placed.map((p, i) => `[${i + 1}:a]aformat=sample_rates=48000:channel_layouts=stereo,adelay=${Math.round(p.at * 1000)}|${Math.round(p.at * 1000)}[l${i}]`);
+  const delays = placed.map(
+    (p, i) => `[${i + 1}:a]aformat=sample_rates=48000:channel_layouts=stereo,adelay=${Math.round(p.at * 1000)}|${Math.round(p.at * 1000)}[l${i}]`,
+  );
   const mix = `${placed.map((_, i) => `[l${i}]`).join("")}amix=inputs=${placed.length}:normalize=0:dropout_transition=0,apad,atrim=0:${DURATION},loudnorm=I=-16:TP=-1.5:LRA=11[vo]`;
   execFileSync(
     ffmpeg.path,
@@ -105,7 +107,9 @@ function main() {
     { stdio: "inherit" },
   );
   writeSrt(path.join(out, "demo.srt"), spans);
-  console.log(`wrote ${path.relative(process.cwd(), target)}, ${seconds(target).toFixed(2)} s${overruns ? `, ${overruns} line(s) over their window` : ", every line inside its window"}`);
+  console.log(
+    `wrote ${path.relative(process.cwd(), target)}, ${seconds(target).toFixed(2)} s${overruns ? `, ${overruns} line(s) over their window` : ", every line inside its window"}`,
+  );
   if (overruns) process.exitCode = 1;
 }
 

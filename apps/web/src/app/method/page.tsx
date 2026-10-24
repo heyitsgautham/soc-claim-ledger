@@ -96,7 +96,10 @@ export default function MethodPage() {
           ))}
         </ol>
 
-        <div className="anim-settle mt-4 grid grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] items-center gap-12 bg-ink px-8 py-6 text-paper" style={at(250 + SOURCES.length * 180 + 200)}>
+        <div
+          className="anim-settle mt-4 grid grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] items-center gap-12 bg-ink px-8 py-6 text-paper"
+          style={at(250 + SOURCES.length * 180 + 200)}
+        >
           <div className="flex flex-col gap-2">
             <span className="text-[11px] leading-none font-medium tracking-[0.14em] text-ink-4 uppercase">Synthetic submissions, the same SOC behaviour</span>
             <span className="text-[15px] leading-snug">

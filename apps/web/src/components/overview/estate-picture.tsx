@@ -112,10 +112,26 @@ export function EstatePicture({
   const siteGap = (860 - o.otSites.length * siteW) / Math.max(1, o.otSites.length - 1);
 
   return (
-    <svg viewBox={`0 0 ${VB_W} ${VB_H}`} className="block h-auto w-full" role="img" aria-label={`${code}'s estate and the SOC its alerts go to`} data-testid={testId}>
+    <svg
+      viewBox={`0 0 ${VB_W} ${VB_H}`}
+      className="block h-auto w-full"
+      role="img"
+      aria-label={`${code}'s estate and the SOC its alerts go to`}
+      data-testid={testId}
+    >
       {/* the lines alerts travel along, drawn first so blocks sit over them */}
       {IT.map((b, i) =>
-        by.get(b.k) ? <path key={b.k} d={itPath(b.x + b.w / 2)} fill="none" stroke="var(--evidence-soft)" strokeWidth={1.3} className="anim-appear" style={at(T.flows + i * 90)} /> : null,
+        by.get(b.k) ? (
+          <path
+            key={b.k}
+            d={itPath(b.x + b.w / 2)}
+            fill="none"
+            stroke="var(--evidence-soft)"
+            strokeWidth={1.3}
+            className="anim-appear"
+            style={at(T.flows + i * 90)}
+          />
+        ) : null,
       )}
       {ot && (
         <path
@@ -137,7 +153,14 @@ export function EstatePicture({
         const top = blockTop(e.assets, b.w);
         return (
           <g key={b.k} className="anim-settle" style={at(T.blocks + i * 140)} data-testid={`estate-${b.k}`}>
-            <rect x={b.x + 0.5} y={top + 0.5} width={b.w - 1} height={IT_BASE - top} fill="var(--paper-sheet)" stroke={silence ? "var(--evidence-soft)" : "var(--rule)"} />
+            <rect
+              x={b.x + 0.5}
+              y={top + 0.5}
+              width={b.w - 1}
+              height={IT_BASE - top}
+              fill="var(--paper-sheet)"
+              stroke={silence ? "var(--evidence-soft)" : "var(--rule)"}
+            />
             <text x={b.x + 14} y={top + 27} fontSize={17} fill="var(--ink)" className="font-serif">
               {b.label}
             </text>
@@ -167,7 +190,9 @@ export function EstatePicture({
             Grid control systems, OT
           </text>
           <text x={0} y={OT_TOP - 11} fontSize={12} fill={silence ? "var(--gap)" : "var(--ink-3)"} className="num">
-            {silence ? `0 alerts${expectedOt ? `, about ${int(expectedOt)} expected` : ""}` : `${int(ot.assets)} assets at ${o.otSites.length} sites, ${int(ot.critical)} critical`}
+            {silence
+              ? `0 alerts${expectedOt ? `, about ${int(expectedOt)} expected` : ""}`
+              : `${int(ot.assets)} assets at ${o.otSites.length} sites, ${int(ot.critical)} critical`}
           </text>
         </g>
       )}
@@ -193,7 +218,12 @@ export function EstatePicture({
                   strokeWidth={silence ? 1.5 : 1}
                 />
                 {/* a substation, drawn as a gable over a bus bar */}
-                <path d={`M ${x + 22} ${OT_TOP + 42} L ${x + siteW / 2} ${OT_TOP + 20} L ${x + siteW - 22} ${OT_TOP + 42} Z`} fill="none" stroke={stroke} strokeWidth={1.3} />
+                <path
+                  d={`M ${x + 22} ${OT_TOP + 42} L ${x + siteW / 2} ${OT_TOP + 20} L ${x + siteW - 22} ${OT_TOP + 42} Z`}
+                  fill="none"
+                  stroke={stroke}
+                  strokeWidth={1.3}
+                />
                 <line x1={x + 22} x2={x + siteW - 22} y1={OT_TOP + 48} y2={OT_TOP + 48} stroke={stroke} strokeWidth={1.3} />
                 {Array.from({ length: s.assets }, (_, j) => (
                   <rect
@@ -207,7 +237,14 @@ export function EstatePicture({
                     strokeWidth={1.2}
                   />
                 ))}
-                <text x={x + siteW / 2} y={OT_TOP + SITE_H - 12} textAnchor="middle" fontSize={12} fill={silence ? "var(--gap)" : "var(--ink-2)"} className="num">
+                <text
+                  x={x + siteW / 2}
+                  y={OT_TOP + SITE_H - 12}
+                  textAnchor="middle"
+                  fontSize={12}
+                  fill={silence ? "var(--gap)" : "var(--ink-2)"}
+                  className="num"
+                >
                   {s.site}
                 </text>
               </g>

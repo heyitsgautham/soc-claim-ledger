@@ -17,12 +17,21 @@ test("one paragraph with the hostname changed scores above 0.95, natural notes d
     `Alert reviewed on ${host}. No malicious activity observed after initial triage. Host checked against EDR telemetry and no further ` +
     "indicators of compromise were found. User activity appears consistent with normal business operations. Closing as per SOP, no escalation required.";
   assert.ok(noteSimilarity(t("EP-OPS-0141"), t("DMZ-WEB-21")) > 0.95);
-  assert.ok(noteSimilarity("Pulled EDR telemetry, powershell spawned from winword, host contained.", "Reviewed firewall sessions for 3 days, scanner traffic, closed as benign.") < 0.5);
+  assert.ok(
+    noteSimilarity(
+      "Pulled EDR telemetry, powershell spawned from winword, host contained.",
+      "Reviewed firewall sessions for 3 days, scanner traffic, closed as benign.",
+    ) < 0.5,
+  );
 });
 
 test("the cluster keeps every pasted note and nothing else", () => {
   const notes = [
-    ...["A-1", "A-2", "A-3", "A-4", "A-5", "A-6"].map((h, i) => ({ id: `c${i}`, owner: "L1-01", text: `Alert reviewed on ${h}. No malicious activity observed. Closing as per SOP, no escalation required.` })),
+    ...["A-1", "A-2", "A-3", "A-4", "A-5", "A-6"].map((h, i) => ({
+      id: `c${i}`,
+      owner: "L1-01",
+      text: `Alert reviewed on ${h}. No malicious activity observed. Closing as per SOP, no escalation required.`,
+    })),
     { id: "x", owner: "L1-02", text: "Credential material accessed by lsass reader, account reset and host reimaged after review." },
   ];
   const r = templatedNotes(notes, 0.9, 5);

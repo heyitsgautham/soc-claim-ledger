@@ -2,14 +2,7 @@
 // version used. An assessment always runs the version that was current for its cycle,
 // so a past finding can be reproduced exactly and calibration can compare versions.
 
-export const DETECTOR_IDS = [
-  "claim-gap",
-  "sla-bunching",
-  "templated-notes",
-  "negative-space",
-  "weekend-coverage",
-  "repeat-no-remediation",
-] as const;
+export const DETECTOR_IDS = ["claim-gap", "sla-bunching", "templated-notes", "negative-space", "weekend-coverage", "repeat-no-remediation"] as const;
 export type DetectorId = (typeof DETECTOR_IDS)[number];
 
 export interface DetectorVersion {
@@ -36,7 +29,9 @@ export const DETECTORS: Record<DetectorId, DetectorInfo> = {
     stakes: 1,
     title: "Claim versus evidence",
     question: "Does an attested figure hold when recomputed from the entity's own records?",
-    versions: [{ version: "1.0.0", from: "FY26-Q2", change: "First release, 16 questionnaire metrics", params: { percentTolerance: 2, relativeTolerance: 0.1 } }],
+    versions: [
+      { version: "1.0.0", from: "FY26-Q2", change: "First release, 16 questionnaire metrics", params: { percentTolerance: 2, relativeTolerance: 0.1 } },
+    ],
   },
   "sla-bunching": {
     id: "sla-bunching",
@@ -52,7 +47,12 @@ export const DETECTORS: Record<DetectorId, DetectorInfo> = {
     question: "Are closure notes one paragraph with the hostname changed?",
     versions: [
       { version: "1.0.0", from: "FY26-Q2", change: "First release, cosine 0.90", params: { threshold: 0.9, minCluster: 5 } },
-      { version: "1.1.0", from: "FY26-Q4", change: "Threshold raised to 0.95 after examiners rejected short benign notes", params: { threshold: 0.95, minCluster: 5 } },
+      {
+        version: "1.1.0",
+        from: "FY26-Q4",
+        change: "Threshold raised to 0.95 after examiners rejected short benign notes",
+        params: { threshold: 0.95, minCluster: 5 },
+      },
     ],
   },
   "negative-space": {

@@ -63,8 +63,16 @@ const CLOSERS = [
 ];
 
 // Two short lines, the way a hurried analyst writes a benign closure.
-const SHORT_FIRST = ["Checked {host} against EDR telemetry.", "Reviewed {host} process and network activity.", "Verified {host} activity with the asset owner."];
-const SHORT_SECOND = ["Benign activity, no threat found, closed.", "Expected behaviour for this host role, closing.", "No malicious indicators observed, closed."];
+const SHORT_FIRST = [
+  "Checked {host} against EDR telemetry.",
+  "Reviewed {host} process and network activity.",
+  "Verified {host} activity with the asset owner.",
+];
+const SHORT_SECOND = [
+  "Benign activity, no threat found, closed.",
+  "Expected behaviour for this host role, closing.",
+  "No malicious indicators observed, closed.",
+];
 
 const PROCS = ["powershell.exe", "rundll32.exe", "wmic.exe", "certutil.exe", "python3", "cmd.exe", "svchost.exe", "java"];
 const PARENTS = ["winword.exe", "explorer.exe", "services.exe", "sshd", "outlook.exe", "cron"];

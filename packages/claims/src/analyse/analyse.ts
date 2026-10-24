@@ -50,7 +50,10 @@ export class Workspace {
   // Newest first, up to and including `cycle`.
   window(entity: string, cycle: string, depth: number): Submission[] {
     const qs = this.quarters(entity).filter((q) => q <= cycle);
-    return qs.reverse().slice(0, depth).map((q) => this.submission(entity, q));
+    return qs
+      .reverse()
+      .slice(0, depth)
+      .map((q) => this.submission(entity, q));
   }
 
   sectorPeers(entity: string): string[] {
@@ -126,7 +129,13 @@ export function computeSignals(ws: Workspace, entity: string, cycle: string, rul
   return {
     bunching,
     templatedNotes: { ...notes, detector: { id: "templated-notes", version: tv.version } },
-    negativeSpace: { ...grid, detector: { id: "negative-space", version: nv.version }, window: ownWindow.map((s) => s.manifest.quarter.id), silentAssetIds, silentAssets },
+    negativeSpace: {
+      ...grid,
+      detector: { id: "negative-space", version: nv.version },
+      window: ownWindow.map((s) => s.manifest.quarter.id),
+      silentAssetIds,
+      silentAssets,
+    },
     weekend: { ...weekend, detector: { id: "weekend-coverage", version: wv.version } },
     repeats: {
       detector: { id: "repeat-no-remediation", version: rv.version },
@@ -162,7 +171,10 @@ function show(m: Measure): string {
 
 // A one-line reading for claims that carry no finding of their own.
 function plainGap(e: ClaimEvaluation): Finding {
-  return [`${e.claim.text}: attested ${show(e.claim.attested)}, the records show ${e.recomputed ? show(e.recomputed) : "nothing"}`, ...(e.population ? [" across ", e.population.count, ` ${e.population.noun}.`] : ["."])];
+  return [
+    `${e.claim.text}: attested ${show(e.claim.attested)}, the records show ${e.recomputed ? show(e.recomputed) : "nothing"}`,
+    ...(e.population ? [" across ", e.population.count, ` ${e.population.noun}.`] : ["."]),
+  ];
 }
 
 function finding(
@@ -239,7 +251,9 @@ export function computeFindings(analysis: Pick<EntityAnalysis, "assessment" | "s
 
   if (s.negativeSpace.flagged) {
     const rows = s.negativeSpace.rows.filter((r) => r.cells.some((c) => c.state === "negative_space"));
-    const lead = rows.sort((x, y) => y.cells.filter((c) => c.state === "negative_space").length - x.cells.filter((c) => c.state === "negative_space").length)[0]!;
+    const lead = rows.sort(
+      (x, y) => y.cells.filter((c) => c.state === "negative_space").length - x.cells.filter((c) => c.state === "negative_space").length,
+    )[0]!;
     const expected = lead.cells.filter((c) => c.state === "negative_space").reduce((sum, c) => sum + (c.expected ?? 0), 0);
     out.push(
       finding(cycle, verdicts, "negative-space", {
@@ -411,7 +425,11 @@ export function drawSamples(ws: Workspace, entity: string, cycle: string, findin
     if (kind === "case") {
       const c = cases.find((x) => x.id === id)!;
       const row = ix.caseRow(c);
-      return { record: { kind: "case", case: row }, title: row.ruleName, subtitle: `${SEVERITY[row.priority][0]!.toUpperCase()}${SEVERITY[row.priority].slice(1)} alert on ${row.assetHostname}` };
+      return {
+        record: { kind: "case", case: row },
+        title: row.ruleName,
+        subtitle: `${SEVERITY[row.priority][0]!.toUpperCase()}${SEVERITY[row.priority].slice(1)} alert on ${row.assetHostname}`,
+      };
     }
     const a = ix.asset(id)!;
     const src = a.log_source_id ? sources.get(a.log_source_id) : undefined;
@@ -426,7 +444,11 @@ export function drawSamples(ws: Workspace, entity: string, cycle: string, findin
       daysExpected: src?.days_expected ?? null,
       assetClass: a.asset_class,
     };
-    return { record: { kind: "asset", asset }, title: a.hostname, subtitle: `${a.criticality} ${a.asset_class === "ot" ? "OT" : a.asset_class} asset at ${a.site}` };
+    return {
+      record: { kind: "asset", asset },
+      title: a.hostname,
+      subtitle: `${a.criticality} ${a.asset_class === "ot" ? "OT" : a.asset_class} asset at ${a.site}`,
+    };
   };
 
   const items: SampleItem[] = [];

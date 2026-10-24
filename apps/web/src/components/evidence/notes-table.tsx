@@ -19,8 +19,9 @@ export function NotesTable({ section }: { section: NotesSection }) {
   return (
     <div className="flex min-h-0 flex-1 flex-col" data-testid="notes-table">
       <p className="mb-3 text-[13px] leading-snug text-ink-2">
-        <span className="num text-ink">{cluster.size}</span> of the <span className="num text-ink">{section.compared}</span> closure notes on these cases match at a
-        cosine similarity of <span className="num text-ink">{section.threshold.toFixed(2)}</span> or more. Words that differ from the central note are marked.{" "}
+        <span className="num text-ink">{cluster.size}</span> of the <span className="num text-ink">{section.compared}</span> closure notes on these cases match
+        at a cosine similarity of <span className="num text-ink">{section.threshold.toFixed(2)}</span> or more. Words that differ from the central note are
+        marked.{" "}
         <span className="num text-ink-3">
           Detector {section.detector.id} {section.detector.version}
         </span>

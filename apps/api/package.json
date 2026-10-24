@@ -5,7 +5,8 @@
   "description": "FastAPI over DuckDB. The Python side lives in .venv, set up by pnpm api:setup at the repo root.",
   "scripts": {
     "setup": "uv sync --locked --extra dev --python 3.12",
-    "lint": ".venv/bin/ruff check ledger_api tests",
+    "lint": ".venv/bin/ruff check ledger_api tests && .venv/bin/ruff format --check ledger_api tests",
+    "format": ".venv/bin/ruff format ledger_api tests",
     "test": ".venv/bin/pytest -q",
     "audit": "uv export --locked --extra dev --no-emit-project --quiet -o \"${TMPDIR:-/tmp}/ledger-api-requirements.txt\" && uvx --from pip-audit==2.10.1 pip-audit --require-hashes --disable-pip -r \"${TMPDIR:-/tmp}/ledger-api-requirements.txt\"",
     "typecheck": ".venv/bin/python -m compileall -q ledger_api",

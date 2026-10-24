@@ -20,10 +20,21 @@ export function AuditLog({ entries, highlightSince }: { entries: AuditEntry[]; h
         {entries.map((e, i) => {
           const fresh = highlightSince !== null && e.at >= highlightSince && e.actor !== "SYSTEM";
           return (
-            <li key={`${e.at}-${i}`} className={cn("grid grid-cols-[112px_62px_76px_minmax(0,1fr)] items-baseline gap-x-3 border-b border-rule-soft py-[7px]", fresh && "anim-settle bg-paper-deep")}>
+            <li
+              key={`${e.at}-${i}`}
+              className={cn(
+                "grid grid-cols-[112px_62px_76px_minmax(0,1fr)] items-baseline gap-x-3 border-b border-rule-soft py-[7px]",
+                fresh && "anim-settle bg-paper-deep",
+              )}
+            >
               <span className="num text-[11.5px] leading-none text-ink-3">{e.at.slice(0, 16).replace("T", " ")}</span>
               <span className="num text-[11.5px] leading-none text-ink-2">{e.actor}</span>
-              <span className={cn("text-[11px] leading-none font-medium tracking-[0.08em] uppercase", e.action === "detector_released" ? "text-evidence" : "text-ink-2")}>
+              <span
+                className={cn(
+                  "text-[11px] leading-none font-medium tracking-[0.08em] uppercase",
+                  e.action === "detector_released" ? "text-evidence" : "text-ink-2",
+                )}
+              >
                 {ACTION[e.action]}
               </span>
               <span className="min-w-0 truncate text-[12.5px] leading-none text-ink">

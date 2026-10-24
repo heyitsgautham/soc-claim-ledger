@@ -25,17 +25,7 @@ export const QUARTERS: readonly Quarter[] = [
 ];
 
 // Public holidays inside the demo window. Alert volume from user endpoints drops on these days.
-export const HOLIDAYS = new Set([
-  "2025-08-15",
-  "2025-10-02",
-  "2025-10-20",
-  "2025-12-25",
-  "2026-01-26",
-  "2026-03-04",
-  "2026-04-03",
-  "2026-04-14",
-  "2026-05-01",
-]);
+export const HOLIDAYS = new Set(["2025-08-15", "2025-10-02", "2025-10-20", "2025-12-25", "2026-01-26", "2026-03-04", "2026-04-03", "2026-04-14", "2026-05-01"]);
 
 export function istMidnight(date: string): number {
   return Date.parse(`${date}T00:00:00+05:30`);

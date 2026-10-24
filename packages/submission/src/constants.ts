@@ -11,31 +11,14 @@ export const CRITICALITIES = ["critical", "high", "standard"] as const;
 export const SHIFT_CODES = ["A", "B", "C"] as const;
 
 // SOC disposition codes, in the vocabulary common SOC playbooks use at closure.
-export const DISPOSITIONS = [
-  "true_positive_contained",
-  "true_positive_remediated",
-  "benign_positive",
-  "false_positive",
-  "duplicate",
-  "inconclusive",
-] as const;
+export const DISPOSITIONS = ["true_positive_contained", "true_positive_remediated", "benign_positive", "false_positive", "duplicate", "inconclusive"] as const;
 
 export const HUNT_OUTCOMES = ["no_finding", "finding_raised", "detection_improved"] as const;
 
 // The record exports a submission can carry.
 // A submission that leaves one out is not the same as a submission with zero rows in it,
 // and the claims layer reports the first as insufficient evidence.
-export const EXPORT_NAMES = [
-  "alerts",
-  "cases",
-  "escalations",
-  "assets",
-  "log_sources",
-  "rules",
-  "analysts",
-  "shifts",
-  "threat_hunts",
-] as const;
+export const EXPORT_NAMES = ["alerts", "cases", "escalations", "assets", "log_sources", "rules", "analysts", "shifts", "threat_hunts"] as const;
 
 export type Priority = (typeof PRIORITIES)[number];
 export type AssetClass = (typeof ASSET_CLASSES)[number];

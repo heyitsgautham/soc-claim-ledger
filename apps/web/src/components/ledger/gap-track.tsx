@@ -22,11 +22,7 @@ export function GapTrack({ evaluation: e, major, delayMs }: { evaluation: ClaimE
   const narrow = hi - lo < 14;
 
   return (
-    <div
-      className={cn("group/track relative w-full", major ? "h-[64px]" : "h-[34px]")}
-      data-testid={`gap-track-${e.claim.ref}`}
-      aria-hidden
-    >
+    <div className={cn("group/track relative w-full", major ? "h-[64px]" : "h-[34px]")} data-testid={`gap-track-${e.claim.ref}`} aria-hidden>
       {/* baseline and end ticks */}
       <div className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-rule" />
       <div className="absolute top-1/2 left-0 h-[7px] w-px -translate-y-1/2 bg-ink-4" />

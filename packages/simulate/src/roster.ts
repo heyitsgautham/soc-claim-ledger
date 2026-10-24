@@ -92,7 +92,11 @@ export interface EntityConfig {
 export type Toggle = "skipL2OnP1" | "closeAtSlaMinus" | "templatedNotes" | "weekend" | "recurring";
 
 type Overrides = {
-  [K in keyof EntityConfig]?: EntityConfig[K] extends object ? (EntityConfig[K] extends unknown[] ? EntityConfig[K] : Partial<EntityConfig[K]>) : EntityConfig[K];
+  [K in keyof EntityConfig]?: EntityConfig[K] extends object
+    ? EntityConfig[K] extends unknown[]
+      ? EntityConfig[K]
+      : Partial<EntityConfig[K]>
+    : EntityConfig[K];
 };
 
 // A well-run SOC. Every entity starts here and changes only what makes it itself.

@@ -71,7 +71,9 @@ export function NotesStack({ section }: { section: NotesSection }) {
           <div
             className="relative transition-[height] duration-[1100ms] ease-[cubic-bezier(0.65,0,0.25,1)]"
             style={{ height: registered ? 150 : 150 + 13 * (layers - 1) }}
-            aria-label={`${layers} closure notes laid one on another`} role="img">
+            aria-label={`${layers} closure notes laid one on another`}
+            role="img"
+          >
             {cluster.members.map((m, k) => (
               <div
                 key={m.id}
@@ -86,7 +88,12 @@ export function NotesStack({ section }: { section: NotesSection }) {
                   zIndex: k,
                 }}
               >
-                <div className={cn("mb-2 flex justify-between text-[11.5px] leading-none transition-opacity duration-500", registered ? "opacity-0" : "opacity-100")}>
+                <div
+                  className={cn(
+                    "mb-2 flex justify-between text-[11.5px] leading-none transition-opacity duration-500",
+                    registered ? "opacity-0" : "opacity-100",
+                  )}
+                >
                   <span className="num text-ink-3">{m.id}</span>
                   <span className="num text-ink-3">{m.owner}</span>
                 </div>
@@ -112,7 +119,10 @@ export function NotesStack({ section }: { section: NotesSection }) {
             ))}
           </div>
           <p
-            className={cn("mt-3 flex items-baseline gap-4 text-[15px] leading-snug text-ink transition-opacity duration-700", registered ? "opacity-100 delay-1000" : "opacity-0")}
+            className={cn(
+              "mt-3 flex items-baseline gap-4 text-[15px] leading-snug text-ink transition-opacity duration-700",
+              registered ? "opacity-100 delay-1000" : "opacity-0",
+            )}
             data-testid="notes-verdict"
           >
             <span>

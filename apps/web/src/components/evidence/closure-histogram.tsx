@@ -17,7 +17,17 @@ function span(minutes: number): string {
   return `${Math.floor(minutes / 60)} h${minutes % 60 ? ` ${minutes % 60} m` : ""}`;
 }
 
-export function ClosureHistogram({ histogram: h, title, width: W = 380, height: H = 250 }: { histogram: Histogram; title: string; width?: number; height?: number }) {
+export function ClosureHistogram({
+  histogram: h,
+  title,
+  width: W = 380,
+  height: H = 250,
+}: {
+  histogram: Histogram;
+  title: string;
+  width?: number;
+  height?: number;
+}) {
   const plotW = W - M.left - M.right;
   const plotH = H - M.top - M.bottom;
   const n = h.buckets.length;
@@ -44,7 +54,12 @@ export function ClosureHistogram({ histogram: h, title, width: W = 380, height: 
         <span className="label-caps !text-[10px]">SLA bunching</span>
       </figcaption>
 
-      <svg viewBox={`0 0 ${W} ${H}`} className="block h-auto w-full" role="img" aria-label={`${share}% of closures fall in the ${h.bucketMinutes} minutes before the SLA`}>
+      <svg
+        viewBox={`0 0 ${W} ${H}`}
+        className="block h-auto w-full"
+        role="img"
+        aria-label={`${share}% of closures fall in the ${h.bucketMinutes} minutes before the SLA`}
+      >
         {/* annotation */}
         {lit && (
           <g className="anim-appear" style={{ animationDelay: `${FIRST_MS + (n + 1) * STAGGER_MS + 900}ms` }} data-testid="bunching-annotation">

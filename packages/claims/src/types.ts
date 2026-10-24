@@ -90,7 +90,16 @@ export type EvidenceSection =
   | { type: "cases"; id: string; title: string; tab?: string; rows: CaseEvidenceRow[]; timelineMinutes: number; markers: TimelineMarker[] }
   | { type: "assets"; id: string; title: string; tab?: string; rows: AssetEvidenceRow[] }
   | { type: "sources"; id: string; title: string; tab?: string; rows: SourceEvidenceRow[] }
-  | { type: "notes"; id: string; title: string; tab?: string; threshold: number; compared: number; detector: { id: string; version: string }; cluster: NoteCluster };
+  | {
+      type: "notes";
+      id: string;
+      title: string;
+      tab?: string;
+      threshold: number;
+      compared: number;
+      detector: { id: string; version: string };
+      cluster: NoteCluster;
+    };
 
 // Records a finding points at, which the sample sheet draws from.
 export interface Subjects {

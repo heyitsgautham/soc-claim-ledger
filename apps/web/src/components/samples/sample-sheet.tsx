@@ -94,7 +94,10 @@ export function SampleSheet({ sheet, initial, entity }: { sheet: Sheet; initial:
   const blind = mode === "review";
 
   return (
-    <div className="grid grid-cols-[minmax(0,1fr)_470px] gap-x-10 min-[1680px]:grid-cols-[minmax(0,1fr)_680px] min-[1680px]:gap-x-12" data-testid="sample-sheet">
+    <div
+      className="grid grid-cols-[minmax(0,1fr)_470px] gap-x-10 min-[1680px]:grid-cols-[minmax(0,1fr)_680px] min-[1680px]:gap-x-12"
+      data-testid="sample-sheet"
+    >
       <section aria-label="Sample sheet">
         <div className="double-rule grid grid-cols-[34px_minmax(0,1fr)_120px_minmax(0,1fr)_156px] items-end gap-x-5 pb-[9px]">
           <span className="label-caps">#</span>
@@ -130,7 +133,11 @@ export function SampleSheet({ sheet, initial, entity }: { sheet: Sheet; initial:
                   </span>
                   <span className="min-w-0">
                     {hidden ? (
-                      <span className="hatch block h-[14px] w-full max-w-[260px] border-y border-rule" role="img" aria-label="Hidden until a verdict is recorded" />
+                      <span
+                        className="hatch block h-[14px] w-full max-w-[260px] border-y border-rule"
+                        role="img"
+                        aria-label="Hidden until a verdict is recorded"
+                      />
                     ) : (
                       <Reasons item={it} />
                     )}
@@ -155,8 +162,8 @@ export function SampleSheet({ sheet, initial, entity }: { sheet: Sheet; initial:
               </p>
             </div>
             <p className="text-[14px] leading-[1.55] text-ink-2">
-              In blind review the examiner sees each record as the entity submitted it, and records a verdict before the tool&apos;s reasons appear. Those verdicts are
-              what calibrate every detector.
+              In blind review the examiner sees each record as the entity submitted it, and records a verdict before the tool&apos;s reasons appear. Those
+              verdicts are what calibrate every detector.
             </p>
             <dl className="grid grid-cols-2 gap-y-2 text-[13px]">
               <dt className="text-ink-3">Reviewed this cycle</dt>
@@ -180,7 +187,15 @@ export function SampleSheet({ sheet, initial, entity }: { sheet: Sheet; initial:
             </button>
           </>
         ) : item ? (
-          <BlindRecord item={item} verdict={verdicts[item.key]} saving={saving} error={error} onVerdict={record} onNext={next} onLeave={() => setMode("sheet")} />
+          <BlindRecord
+            item={item}
+            verdict={verdicts[item.key]}
+            saving={saving}
+            error={error}
+            onVerdict={record}
+            onNext={next}
+            onLeave={() => setMode("sheet")}
+          />
         ) : null}
       </aside>
     </div>
@@ -207,9 +222,7 @@ function BlindRecord({
   return (
     <div className="flex flex-col gap-4" data-testid="blind-record">
       <div className="flex items-center justify-between">
-        <span className="label-caps">
-          Blind review · record {String(item.n).padStart(2, "0")}
-        </span>
+        <span className="label-caps">Blind review · record {String(item.n).padStart(2, "0")}</span>
         <button type="button" onClick={onLeave} className="text-[12.5px] text-ink-2 hover:text-ink">
           Back to the sheet
         </button>
@@ -300,8 +313,15 @@ function BlindRecord({
           ) : (
             <p className="text-[13.5px] text-ink">{PICK[item.pick]}. No detector flagged this record.</p>
           )}
-          <p className="text-[12.5px] leading-snug text-ink-2">This verdict now counts toward the precision of every detector listed, on the calibration screen.</p>
-          <button type="button" onClick={onNext} data-testid="next-record" className="self-start border border-ink px-4 py-[9px] text-[13px] leading-none text-ink hover:bg-paper-deep">
+          <p className="text-[12.5px] leading-snug text-ink-2">
+            This verdict now counts toward the precision of every detector listed, on the calibration screen.
+          </p>
+          <button
+            type="button"
+            onClick={onNext}
+            data-testid="next-record"
+            className="self-start border border-ink px-4 py-[9px] text-[13px] leading-none text-ink hover:bg-paper-deep"
+          >
             Next record
           </button>
         </div>

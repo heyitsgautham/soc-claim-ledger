@@ -87,51 +87,56 @@ function CaseRow({
   const breached = closed !== null && sla !== null && closed >= sla;
   return (
     <li className={cn("border-b border-rule-soft", open && "bg-paper-deep/60")} data-testid={`case-${row.caseId}`}>
-      <button type="button" onClick={onToggle} aria-expanded={open} className={cn(CASE_GRID, "w-full cursor-pointer py-[7px] text-left hover:bg-paper-deep/60")}>
-      <span className="flex flex-col gap-[4px]">
-        <span className="num text-[12.5px] leading-none text-ink">{row.caseId}</span>
-        <span className="num text-[11.5px] leading-none text-ink-3">{istShort(row.openedAt)}</span>
-      </span>
-      <span className="flex min-w-0 flex-col gap-[4px]">
-        <span className="truncate text-[13px] leading-tight text-ink" title={row.ruleName}>
-          {row.ruleName}
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={open}
+        className={cn(CASE_GRID, "w-full cursor-pointer py-[7px] text-left hover:bg-paper-deep/60")}
+      >
+        <span className="flex flex-col gap-[4px]">
+          <span className="num text-[12.5px] leading-none text-ink">{row.caseId}</span>
+          <span className="num text-[11.5px] leading-none text-ink-3">{istShort(row.openedAt)}</span>
         </span>
-        <span className="num truncate text-[11.5px] leading-none text-ink-3">
-          {row.technique} · {row.assetHostname} · {row.owner}
+        <span className="flex min-w-0 flex-col gap-[4px]">
+          <span className="truncate text-[13px] leading-tight text-ink" title={row.ruleName}>
+            {row.ruleName}
+          </span>
+          <span className="num truncate text-[11.5px] leading-none text-ink-3">
+            {row.technique} · {row.assetHostname} · {row.owner}
+          </span>
         </span>
-      </span>
-      <span className="relative h-[22px]" role="img" aria-label={lifecycleLabel(row)}>
-        <span className="absolute inset-x-0 top-1/2 h-px bg-rule" />
-        {markers.map((m) => (
-          <span key={m.label} className={cn("absolute top-0 bottom-0", markerClass(m))} style={{ left: `${pct(m.minutes, span)}%` }} />
-        ))}
-        {closed !== null && (
-          <span className="absolute top-1/2 left-0 h-[2px] -translate-y-1/2 bg-ink-3" style={{ width: `${pct(Math.min(closed, span), span)}%` }} />
-        )}
-        {row.escalatedAfterMin !== null && (
-          <span
-            className={cn(
-              "absolute top-1/2 size-[8px] -translate-x-1/2 -translate-y-1/2 rounded-full ring-2 ring-paper-sheet",
-              row.escalatedAfterMin <= 30 ? "bg-evidence" : "bg-gap-soft",
-            )}
-            style={{ left: `${pct(row.escalatedAfterMin, span)}%` }}
-            title={`Escalated to ${row.escalatedTo} after ${duration(row.escalatedAfterMin * 60)}`}
-          />
-        )}
-        {closed !== null && (
-          <span
-            className={cn("absolute top-1/2 h-[14px] w-[3px] -translate-x-1/2 -translate-y-1/2", bunched ? "bg-gap" : "bg-ink")}
-            style={{ left: `${pct(Math.min(closed, span), span)}%` }}
-          />
-        )}
-        {closed !== null && closed > span && <span className="num absolute top-0 right-0 text-[10px] leading-none text-ink-3">beyond</span>}
-      </span>
-      <span className="flex flex-col items-end gap-[5px]">
-        <span className={cn("num text-[13px] leading-none", bunched ? "font-semibold text-gap" : breached ? "text-ink" : "text-ink-2")}>
-          {closed === null ? "Open" : duration(closed * 60)}
+        <span className="relative h-[22px]" role="img" aria-label={lifecycleLabel(row)}>
+          <span className="absolute inset-x-0 top-1/2 h-px bg-rule" />
+          {markers.map((m) => (
+            <span key={m.label} className={cn("absolute top-0 bottom-0", markerClass(m))} style={{ left: `${pct(m.minutes, span)}%` }} />
+          ))}
+          {closed !== null && (
+            <span className="absolute top-1/2 left-0 h-[2px] -translate-y-1/2 bg-ink-3" style={{ width: `${pct(Math.min(closed, span), span)}%` }} />
+          )}
+          {row.escalatedAfterMin !== null && (
+            <span
+              className={cn(
+                "absolute top-1/2 size-[8px] -translate-x-1/2 -translate-y-1/2 rounded-full ring-2 ring-paper-sheet",
+                row.escalatedAfterMin <= 30 ? "bg-evidence" : "bg-gap-soft",
+              )}
+              style={{ left: `${pct(row.escalatedAfterMin, span)}%` }}
+              title={`Escalated to ${row.escalatedTo} after ${duration(row.escalatedAfterMin * 60)}`}
+            />
+          )}
+          {closed !== null && (
+            <span
+              className={cn("absolute top-1/2 h-[14px] w-[3px] -translate-x-1/2 -translate-y-1/2", bunched ? "bg-gap" : "bg-ink")}
+              style={{ left: `${pct(Math.min(closed, span), span)}%` }}
+            />
+          )}
+          {closed !== null && closed > span && <span className="num absolute top-0 right-0 text-[10px] leading-none text-ink-3">beyond</span>}
         </span>
-        <span className="truncate text-[11.5px] leading-none text-ink-3">{row.disposition ? DISPOSITION[row.disposition] : "No disposition"}</span>
-      </span>
+        <span className="flex flex-col items-end gap-[5px]">
+          <span className={cn("num text-[13px] leading-none", bunched ? "font-semibold text-gap" : breached ? "text-ink" : "text-ink-2")}>
+            {closed === null ? "Open" : duration(closed * 60)}
+          </span>
+          <span className="truncate text-[11.5px] leading-none text-ink-3">{row.disposition ? DISPOSITION[row.disposition] : "No disposition"}</span>
+        </span>
       </button>
       {open && <CaseChain row={row} />}
     </li>
@@ -147,7 +152,8 @@ export function CaseChain({ row, stacked = false }: { row: CaseEvidenceRow; stac
     steps.push({ label: row.alertCount > 1 ? `${row.alertCount} alerts raised` : "Alert raised", detail: istShort(row.firstAlertAt), tone: "ink" });
   steps.push({ label: "Case opened", detail: `${istShort(row.openedAt).slice(7)} by ${row.owner}`, tone: "ink" });
   if (row.priority === "P1" && !l2) steps.push({ label: "L2 escalation", detail: "No record, due +30 m", tone: "gap" });
-  for (const c of row.chain) steps.push({ label: `${c.from} to ${c.to}`, detail: `${plus(c.afterMin)} by ${c.by}`, tone: c.to === "L2" && c.afterMin > 30 ? "gap" : "evidence" });
+  for (const c of row.chain)
+    steps.push({ label: `${c.from} to ${c.to}`, detail: `${plus(c.afterMin)} by ${c.by}`, tone: c.to === "L2" && c.afterMin > 30 ? "gap" : "evidence" });
   if (row.closedAfterMin !== null)
     steps.push({
       label: "Closed",
@@ -159,8 +165,16 @@ export function CaseChain({ row, stacked = false }: { row: CaseEvidenceRow; stac
       <div className="py-3" data-testid="case-chain">
         <ol className="flex flex-col">
           {steps.map((s, i) => (
-            <li key={i} className={cn("grid grid-cols-[170px_minmax(0,1fr)] items-baseline gap-x-4 border-l-2 py-[6px] pl-3", s.tone === "gap" ? "border-gap" : s.tone === "evidence" ? "border-evidence" : "border-rule")}>
-              <span className={cn("text-[11px] leading-none font-semibold tracking-[0.08em] uppercase", s.tone === "gap" ? "text-gap" : "text-ink-2")}>{s.label}</span>
+            <li
+              key={i}
+              className={cn(
+                "grid grid-cols-[170px_minmax(0,1fr)] items-baseline gap-x-4 border-l-2 py-[6px] pl-3",
+                s.tone === "gap" ? "border-gap" : s.tone === "evidence" ? "border-evidence" : "border-rule",
+              )}
+            >
+              <span className={cn("text-[11px] leading-none font-semibold tracking-[0.08em] uppercase", s.tone === "gap" ? "text-gap" : "text-ink-2")}>
+                {s.label}
+              </span>
               <span className={cn("num text-[12.5px] leading-none", s.tone === "gap" ? "text-gap" : "text-ink")}>{s.detail}</span>
             </li>
           ))}
@@ -180,10 +194,16 @@ export function CaseChain({ row, stacked = false }: { row: CaseEvidenceRow; stac
                 s.tone === "gap" ? "border-dashed border-gap bg-gap-tint/40" : s.tone === "evidence" ? "border-evidence/50" : "border-rule",
               )}
             >
-              <span className={cn("text-[11px] leading-none font-semibold tracking-[0.08em] uppercase", s.tone === "gap" ? "text-gap" : "text-ink-2")}>{s.label}</span>
+              <span className={cn("text-[11px] leading-none font-semibold tracking-[0.08em] uppercase", s.tone === "gap" ? "text-gap" : "text-ink-2")}>
+                {s.label}
+              </span>
               <span className="num truncate text-[12px] leading-none text-ink">{s.detail}</span>
             </div>
-            {i < steps.length - 1 && <span className="text-ink-4" aria-hidden>›</span>}
+            {i < steps.length - 1 && (
+              <span className="text-ink-4" aria-hidden>
+                ›
+              </span>
+            )}
           </li>
         ))}
       </ol>

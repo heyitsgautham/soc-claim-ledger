@@ -66,11 +66,15 @@ export function ExportPanel({ code, docId, machine }: { code: string; docId: str
           <div className="anim-settle flex flex-col gap-2 border border-ink bg-paper-sheet p-4" data-testid="export-result">
             <span className="num text-[13px] text-ink">{result.file}</span>
             <span className="text-[12.5px] text-ink-2">
-              <span className="num text-ink">{result.pages}</span> A4 pages · <span className="num text-ink">{Math.round(result.bytes / 1024)}</span> KB · rendered in{" "}
-              <span className="num text-ink">{result.seconds.toFixed(1)}</span> s
+              <span className="num text-ink">{result.pages}</span> A4 pages · <span className="num text-ink">{Math.round(result.bytes / 1024)}</span> KB ·
+              rendered in <span className="num text-ink">{result.seconds.toFixed(1)}</span> s
             </span>
             <span className="num text-[11px] break-all text-ink-3">SHA-256 {result.sha256}</span>
-            <a href={result.href} download={result.file} className="mt-1 flex items-center gap-2 self-start text-[13px] text-evidence underline underline-offset-4">
+            <a
+              href={result.href}
+              download={result.file}
+              className="mt-1 flex items-center gap-2 self-start text-[13px] text-evidence underline underline-offset-4"
+            >
               <Download className="size-4" aria-hidden /> Save the PDF
             </a>
           </div>

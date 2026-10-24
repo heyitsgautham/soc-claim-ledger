@@ -71,8 +71,8 @@ export default async function NegativeSpacePage({ params }: { params: Promise<{ 
             <h1 className="max-w-[1000px] font-serif text-[33px] leading-[1.18] text-ink" data-testid="headline">
               {row ? (
                 <>
-                  {code}&apos;s {CLASS_LABEL[row.assetClass]} assets should have raised about <span className="num font-semibold text-gap">{int(expected)}</span> alerts in{" "}
-                  {quarters.length === 2 ? "two quarters" : quartersText}.{" "}
+                  {code}&apos;s {CLASS_LABEL[row.assetClass]} assets should have raised about{" "}
+                  <span className="num font-semibold text-gap">{int(expected)}</span> alerts in {quarters.length === 2 ? "two quarters" : quartersText}.{" "}
                   {observed === 0 ? (
                     "They raised none."
                   ) : (
@@ -88,7 +88,8 @@ export default async function NegativeSpacePage({ params }: { params: Promise<{ 
               )}
             </h1>
             <p className="max-w-[980px] text-[15px] leading-snug text-ink-2">
-              What should be there and is not. The expectation is the median rate per asset at sector peers {peers.join(" and ")}, times {code}&apos;s own inventory.
+              What should be there and is not. The expectation is the median rate per asset at sector peers {peers.join(" and ")}, times {code}&apos;s own
+              inventory.
             </p>
           </div>
           {claim && claim.status !== "insufficient_evidence" && (
@@ -138,21 +139,21 @@ export default async function NegativeSpacePage({ params }: { params: Promise<{ 
             <>
               <NegativeSpaceGrid result={ns} />
 
-        <div className="mt-4 flex items-center justify-between border-t border-rule pt-3">
-          <ul className="flex flex-wrap gap-x-7 gap-y-2">
-            {LEGEND.map((l) => (
-              <li key={l.label} className="flex items-center gap-2 text-[12.5px] text-ink-2">
-                <span className={`inline-block h-[14px] w-[22px] ${l.swatch}`} aria-hidden />
-                {l.label}
-              </li>
-            ))}
-          </ul>
-          <p className="num text-[11.5px] text-ink-3">
-            {ns.detector.id} {ns.detector.version} · ATT&amp;CK v19.2, ICS for OT
-          </p>
-        </div>
+              <div className="mt-4 flex items-center justify-between border-t border-rule pt-3">
+                <ul className="flex flex-wrap gap-x-7 gap-y-2">
+                  {LEGEND.map((l) => (
+                    <li key={l.label} className="flex items-center gap-2 text-[12.5px] text-ink-2">
+                      <span className={`inline-block h-[14px] w-[22px] ${l.swatch}`} aria-hidden />
+                      {l.label}
+                    </li>
+                  ))}
+                </ul>
+                <p className="num text-[11.5px] text-ink-3">
+                  {ns.detector.id} {ns.detector.version} · ATT&amp;CK v19.2, ICS for OT
+                </p>
+              </div>
 
-        {ns.silentAssets.length > 0 && <SilentAssets assets={ns.silentAssets} quarters={quartersText} />}
+              {ns.silentAssets.length > 0 && <SilentAssets assets={ns.silentAssets} quarters={quartersText} />}
             </>
           }
         />

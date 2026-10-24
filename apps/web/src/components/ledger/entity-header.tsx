@@ -60,7 +60,11 @@ export function EntityHeader({ assessment: a }: { assessment: Assessment }) {
             Signed by the {a.claimsDocument.signed_by_role}, {day(a.claimsDocument.signed_on)}
           </dd>
           <dd className="mt-[2px]">
-            <Link href={`/entities/${a.entity.code}/check`} className="text-ink underline decoration-rule underline-offset-[3px] hover:decoration-ink" data-testid="view-signed">
+            <Link
+              href={`/entities/${a.entity.code}/check`}
+              className="text-ink underline decoration-rule underline-offset-[3px] hover:decoration-ink"
+              data-testid="view-signed"
+            >
               See it as signed
             </Link>
           </dd>

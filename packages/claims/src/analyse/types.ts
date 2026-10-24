@@ -51,9 +51,7 @@ export interface Signals {
   repeats: { detector: DetectorRef; series: RepeatRow[]; flagged: boolean };
 }
 
-export type SampleRecord =
-  | { kind: "case"; case: CaseEvidenceRow }
-  | { kind: "asset"; asset: AssetEvidenceRow & { assetClass: AssetClass } };
+export type SampleRecord = { kind: "case"; case: CaseEvidenceRow } | { kind: "asset"; asset: AssetEvidenceRow & { assetClass: AssetClass } };
 
 export type SamplePick = "finding" | "counterexample" | "random";
 

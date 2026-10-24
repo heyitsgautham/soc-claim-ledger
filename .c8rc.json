@@ -1,20 +1,9 @@
 {
   "all": true,
-  "src": [
-    "packages"
-  ],
-  "include": [
-    "packages/*/src/**/*.ts"
-  ],
-  "exclude": [
-    "packages/*/src/**/cli.ts",
-    "packages/*/src/**/types.ts",
-    "packages/claims/src/model.ts"
-  ],
-  "reporter": [
-    "text-summary",
-    "lcov"
-  ],
+  "src": ["packages"],
+  "include": ["packages/*/src/**/*.ts"],
+  "exclude": ["packages/*/src/**/cli.ts", "packages/*/src/**/types.ts", "packages/claims/src/model.ts"],
+  "reporter": ["text-summary", "lcov"],
   "reports-dir": "coverage",
   "check-coverage": true,
   "lines": 70,

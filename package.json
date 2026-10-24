@@ -24,14 +24,15 @@
     "test:unit": "tsx --test packages/*/test/*.test.ts",
     "test:coverage": "c8 tsx --test packages/*/test/*.test.ts",
     "test:e2e": "tsx --test apps/web/e2e/*.test.ts",
-    "lint": "biome lint . && pnpm --filter @ledger/api lint",
+    "lint": "biome check . && pnpm --filter @ledger/api lint",
     "test:api": "pnpm --filter @ledger/api test",
     "audit:deps": "pnpm audit --audit-level=high && pnpm --filter @ledger/api run audit",
     "api:setup": "pnpm --filter @ledger/api run setup",
     "docs:pdf": "tsx docs/build-pdf.ts",
     "bootstrap": "pnpm install && pnpm api:setup",
     "check:names": "tsx scripts/private-names.ts",
-    "hero": "tsx recording/hero.ts"
+    "hero": "tsx recording/hero.ts",
+    "format": "biome format --write . && pnpm --filter @ledger/api format"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.14",

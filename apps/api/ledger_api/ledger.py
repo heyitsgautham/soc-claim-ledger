@@ -37,9 +37,9 @@ def _ts(col: str) -> str:
 QUERIES: dict[str, str] = {
     # Share of critical (P1) alerts whose case reached L2 within 30 minutes of opening.
     "p1_escalated_to_l2_within_30m": f"""
-        with p1 as (select id, {_ts('opened_at')} as opened from cases where entity = $entity and quarter = $quarter and priority = 'P1'),
+        with p1 as (select id, {_ts("opened_at")} as opened from cases where entity = $entity and quarter = $quarter and priority = 'P1'),
         l2 as (
-          select case_id, min({_ts('escalated_at')}) as at from escalations
+          select case_id, min({_ts("escalated_at")}) as at from escalations
           where entity = $entity and quarter = $quarter and from_level = 'L1' and to_level = 'L2' group by case_id
         )
         select 100.0 * count(*) filter (where l2.at - p1.opened <= 1800) / count(*), count(*) filter (where l2.at - p1.opened <= 1800), count(*)
@@ -47,18 +47,18 @@ QUERIES: dict[str, str] = {
     """,
     # Mean time to triage, in seconds, over the closed cases of critical (P1) alerts.
     "p1_mean_time_to_close": f"""
-        select avg({_ts('closed_at')} - {_ts('opened_at')}), null, count(*)
+        select avg({_ts("closed_at")} - {_ts("opened_at")}), null, count(*)
         from cases where entity = $entity and quarter = $quarter and priority = 'P1' and closed_at is not null
     """,
     # Mean time to acknowledge, in seconds, over acknowledged P1 alerts.
     "p1_mean_time_to_acknowledge": f"""
-        select avg({_ts('acknowledged_at')} - {_ts('created_at')}), null, count(*)
+        select avg({_ts("acknowledged_at")} - {_ts("created_at")}), null, count(*)
         from alerts where entity = $entity and quarter = $quarter and priority = 'P1' and acknowledged_at is not null
     """,
     # Share of closed P2 cases closed within the SLA the case carries.
     "p2_closed_within_sla": f"""
-        select 100.0 * count(*) filter (where {_ts('closed_at')} - {_ts('opened_at')} <= sla_close_minutes * 60) / count(*),
-               count(*) filter (where {_ts('closed_at')} - {_ts('opened_at')} <= sla_close_minutes * 60), count(*)
+        select 100.0 * count(*) filter (where {_ts("closed_at")} - {_ts("opened_at")} <= sla_close_minutes * 60) / count(*),
+               count(*) filter (where {_ts("closed_at")} - {_ts("opened_at")} <= sla_close_minutes * 60), count(*)
         from cases where entity = $entity and quarter = $quarter and priority = 'P2' and closed_at is not null
     """,
     # Critical OT assets seen by the SIEM across this quarter and the one before.

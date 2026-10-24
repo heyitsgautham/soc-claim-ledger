@@ -1,18 +1,5 @@
 import type { AssetClass, Disposition, Level, Priority, RecordInput } from "@ledger/submission";
-import {
-  addDays,
-  DAY,
-  HOLIDAYS,
-  HOUR,
-  istDate,
-  istHour,
-  istMidnight,
-  istWeekday,
-  MINUTE,
-  type Quarter,
-  quarterBounds,
-  toIst,
-} from "./calendar";
+import { addDays, DAY, HOLIDAYS, HOUR, istDate, istHour, istMidnight, istWeekday, MINUTE, type Quarter, quarterBounds, toIst } from "./calendar";
 import { CLOSE_SLA_MINUTES, PLAYBOOKS, RULES, type RuleTemplate } from "./catalogue";
 import { naturalNote, templatedNote } from "./notes";
 import type { Inventory } from "./inventory";
@@ -209,7 +196,11 @@ export function simulateQuarter(entity: EntityConfig, inventory: Inventory, quar
   }
   const liveRules = RULES.filter((r) => candidates.has(r.id));
   const rulesByPriority = new Map<Priority, RuleTemplate[]>();
-  for (const [p] of PRIORITY_MIX) rulesByPriority.set(p, liveRules.filter((r) => r.priority === p));
+  for (const [p] of PRIORITY_MIX)
+    rulesByPriority.set(
+      p,
+      liveRules.filter((r) => r.priority === p),
+    );
 
   const pickAsset = (rng: Rng, rule: RuleTemplate): string => {
     const c = candidates.get(rule.id)!;
@@ -467,8 +458,17 @@ export function simulateQuarter(entity: EntityConfig, inventory: Inventory, quar
         }
       }
       disposition = escalatedAt
-        ? pickDisposition(r, [["true_positive_contained", 50], ["true_positive_remediated", 15], ["benign_positive", 22], ["false_positive", 13]])
-        : pickDisposition(r, [["false_positive", 42], ["benign_positive", 38], ["inconclusive", 20]]);
+        ? pickDisposition(r, [
+            ["true_positive_contained", 50],
+            ["true_positive_remediated", 15],
+            ["benign_positive", 22],
+            ["false_positive", 13],
+          ])
+        : pickDisposition(r, [
+            ["false_positive", 42],
+            ["benign_positive", 38],
+            ["inconclusive", 20],
+          ]);
     } else if (det.priority === "P2") {
       closeMin = sample(r, h.p2Close);
       if (r.chance(h.p2EscalationRate)) {
@@ -479,7 +479,12 @@ export function simulateQuarter(entity: EntityConfig, inventory: Inventory, quar
         closedBy = oncall;
         closeMin = Math.max(closeMin, (at - openedAt) / MINUTE + 15);
       }
-      disposition = pickDisposition(r, [["true_positive_contained", 35], ["benign_positive", 30], ["false_positive", 30], ["duplicate", 5]]);
+      disposition = pickDisposition(r, [
+        ["true_positive_contained", 35],
+        ["benign_positive", 30],
+        ["false_positive", 30],
+        ["duplicate", 5],
+      ]);
     } else if (det.repeat) {
       // The third weekly repeat on the same host. The analyst opens a case and has it reimaged.
       closeMin = sample(r, { medianMin: 900, sigma: 0.4 });
@@ -492,7 +497,12 @@ export function simulateQuarter(entity: EntityConfig, inventory: Inventory, quar
         closedBy = slotAt(at).l2;
         closeMin = Math.max(closeMin, (at - openedAt) / MINUTE + 20);
       }
-      disposition = pickDisposition(r, [["false_positive", 34], ["benign_positive", 40], ["true_positive_contained", 18], ["duplicate", 8]]);
+      disposition = pickDisposition(r, [
+        ["false_positive", 34],
+        ["benign_positive", 40],
+        ["true_positive_contained", 18],
+        ["duplicate", 8],
+      ]);
     }
 
     // Weekend cases wait for the Monday morning shift when the desk is unstaffed.

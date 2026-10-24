@@ -25,7 +25,10 @@ test("the loader refuses a file whose SHA-256 does not match the manifest", () =
   cpSync(demo, dir, { recursive: true });
   const file = path.join(dir, "analysts.ndjson.gz");
   writeFileSync(file, Buffer.concat([readFileSync(file), Buffer.from([0])]));
-  assert.throws(() => loadSubmission(dir), (e: unknown) => e instanceof SubmissionError && /does not match the manifest/.test(e.message));
+  assert.throws(
+    () => loadSubmission(dir),
+    (e: unknown) => e instanceof SubmissionError && /does not match the manifest/.test(e.message),
+  );
 });
 
 test("the demo submission loads and every declared row count matches", () => {

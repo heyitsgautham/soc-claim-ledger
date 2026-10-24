@@ -38,7 +38,19 @@ after(async () => {
 const url = (p: string) => new URL(p, base).href;
 
 test("every screen renders from this machine alone", async () => {
-  for (const p of ["/", "/entities/P-04/check", "/entities/P-04", "/entities/S-03", "/entities/G-04", "/entities/P-04/negative-space", "/entities/P-04/samples", "/calibration", "/entities/P-04/report", "/method", "/title"]) {
+  for (const p of [
+    "/",
+    "/entities/P-04/check",
+    "/entities/P-04",
+    "/entities/S-03",
+    "/entities/G-04",
+    "/entities/P-04/negative-space",
+    "/entities/P-04/samples",
+    "/calibration",
+    "/entities/P-04/report",
+    "/method",
+    "/title",
+  ]) {
     const res = await page.goto(url(p), { waitUntil: "networkidle" });
     assert.equal(res?.status(), 200, p);
     assert.ok(await page.getByTestId("site-footer").isVisible(), `${p} shows the prototype footer`);

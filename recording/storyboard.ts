@@ -55,7 +55,28 @@ const repo = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..")
 
 // A number that opens a sentence is written out, the way the reader says it.
 function opening(n: number): string {
-  const ones = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"];
+  const ones = [
+    "zero",
+    "one",
+    "two",
+    "three",
+    "four",
+    "five",
+    "six",
+    "seven",
+    "eight",
+    "nine",
+    "ten",
+    "eleven",
+    "twelve",
+    "thirteen",
+    "fourteen",
+    "fifteen",
+    "sixteen",
+    "seventeen",
+    "eighteen",
+    "nineteen",
+  ];
   const tens = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
   if (n >= 100) return String(n);
   const w = n < 20 ? ones[n]! : tens[Math.floor(n / 10)]! + (n % 10 ? `-${ones[n % 10]}` : "");

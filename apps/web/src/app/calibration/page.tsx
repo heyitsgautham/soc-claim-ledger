@@ -25,7 +25,11 @@ export default function CalibrationPage() {
   const tn = c.rows.find((r) => r.detector.id === "templated-notes");
   const first = tn?.cells.find((x) => x.precision !== null);
   const last = [...(tn?.cells ?? [])].reverse().find((x) => x.precision !== null);
-  const lastLive = live.map((v) => v.recordedAt).sort().at(-1) ?? null;
+  const lastLive =
+    live
+      .map((v) => v.recordedAt)
+      .sort()
+      .at(-1) ?? null;
   return (
     <>
       <Masthead screen="calibration" entity={defaultEntity()} cycleLabel={p.cycleLabel} />
@@ -44,9 +48,10 @@ export default function CalibrationPage() {
           </h1>
           {first && last && first.version !== last.version && (
             <p className="max-w-[1100px] text-[14.5px] leading-snug text-ink-2">
-              In this demo the past cycles hold simulated examiner verdicts. They confirmed <span className="num">{Math.round((first.precision ?? 0) * 100)}%</span> of templated-notes flags under v{first.version}. After v
-              {last.version} raised the threshold, <span className="num">{Math.round((last.precision ?? 0) * 100)}%</span>. Each finding&apos;s weight in the risk
-              indicator is its detector&apos;s precision from earlier cycles.
+              In this demo the past cycles hold simulated examiner verdicts. They confirmed{" "}
+              <span className="num">{Math.round((first.precision ?? 0) * 100)}%</span> of templated-notes flags under v{first.version}. After v{last.version}{" "}
+              raised the threshold, <span className="num">{Math.round((last.precision ?? 0) * 100)}%</span>. Each finding&apos;s weight in the risk indicator is
+              its detector&apos;s precision from earlier cycles.
             </p>
           )}
         </header>
@@ -54,9 +59,8 @@ export default function CalibrationPage() {
           <div className="flex flex-col gap-4">
             <CalibrationTable calibration={c} current={p.cycle} />
             <p className="text-[12.5px] leading-snug text-ink-3">
-              Precision is confirmed over confirmed plus rejected. Cannot-tell verdicts are counted as reviewed and nothing else. Counterexamples and random picks
-              surfaced{" "}
-              <span className="num text-ink-2">{c.controls.reduce((s, x) => s + x.issues, 0)}</span> issues no detector flagged, out of{" "}
+              Precision is confirmed over confirmed plus rejected. Cannot-tell verdicts are counted as reviewed and nothing else. Counterexamples and random
+              picks surfaced <span className="num text-ink-2">{c.controls.reduce((s, x) => s + x.issues, 0)}</span> issues no detector flagged, out of{" "}
               <span className="num text-ink-2">{c.controls.reduce((s, x) => s + x.reviewed, 0)}</span> reviewed, which is the tool&apos;s measured miss.
             </p>
           </div>
