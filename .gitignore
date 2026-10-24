@@ -18,6 +18,7 @@ data/
 
 # local display names, kept out of the public repository (see apps/web/src/lib/brand.ts)
 .env*
+!.env.example
 
 # recordings: takes, voiceover clips and screenshots stay on the machine that made them
 recording/out/

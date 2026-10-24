@@ -15,19 +15,109 @@ It runs on one machine, with no network, no cloud and no hosted model.
 | Critical OT assets under monitoring | 38 of 38 | 0 of 38 |
 
 A third of P-04's critical alerts close in the last 5 minutes before their 60-minute deadline, and 12 of its closure notes are one pasted paragraph.
-Synthetic data from a simulated SOC. A working prototype, not deployed at NCIIPC.
+Synthetic data from a simulated SOC.
+A working prototype, not deployed at NCIIPC.
 
-## Run it
+## Requirements
+
+| Tool | Version | Used for |
+|---|---|---|
+| Node.js | 20.9 or later, CI uses 22 | the web app, the analysis and the TypeScript tests |
+| pnpm | 10.26.2, pinned in `package.json` | the workspace, run `corepack enable` to get it |
+| uv | 0.5 or later | the API's Python 3.12 virtualenv, installed from `apps/api/uv.lock` |
+| Docker | optional | the offline image and `docker compose up` |
+
+uv downloads Python 3.12 itself when the machine does not have it.
+
+## Install
 
 ```bash
-pnpm bootstrap   # the workspace and the API's virtualenv
-pnpm demo        # simulate, analyse, build, and serve on http://localhost:3157
+git clone https://github.com/heyitsgautham/soc-claim-ledger.git
+cd soc-claim-ledger
+pnpm bootstrap                               # pnpm install, then the API's .venv from uv.lock
+pnpm exec playwright install chromium        # only for the PDF export and the end-to-end test
+git config core.hooksPath .githooks          # once per clone, see "Display names" below
 ```
 
-Offline, `docker compose up` runs the same thing, and `make offline-test` runs the demo with networking removed.
-Names for the demo video are local settings in `apps/web/.env.local`, which git ignores, so run `git config core.hooksPath .githooks` once per clone.
+## Run
 
-## Inside
+```bash
+pnpm demo        # simulate, analyse, build, and serve on http://localhost:3157
+pnpm dev         # the same data, with the Next.js dev server
+```
+
+`pnpm simulate` writes twelve seeded SOC submissions to `data/demo`, and `pnpm analyse` writes what the screens show to `data/demo/derived`.
+The web app only renders that output, so both must run before the first build, and the two scripts above run them first.
+
+The FastAPI service is separate, and the screens do not need it.
+
+```bash
+pnpm --filter @ledger/api ingest   # verify each export's SHA-256 and write the Parquet warehouse
+pnpm --filter @ledger/api serve    # http://127.0.0.1:8157/health, /entities, /entities/P-04/ledger/sql
+```
+
+### Docker
+
+```bash
+docker compose up        # builds the root Dockerfile, serves the web app on 3157 and the API on 8157
+make offline-test        # builds the image and runs the end-to-end test inside it with networking removed
+```
+
+## Test
+
+One command runs the whole suite from a fresh clone, after `pnpm bootstrap`.
+
+```bash
+pnpm test
+```
+
+It simulates and analyses the demo data, runs the TypeScript unit tests with `node:test`, then the API tests with pytest.
+The pytest run includes the parity test that holds the SQL ledger and the TypeScript ledger to the same numbers for every entity.
+
+| Command | What it runs |
+|---|---|
+| `pnpm test` | simulate, analyse, `test:unit`, `test:api` |
+| `pnpm coverage` | the same, with the unit tests under c8 |
+| `pnpm test:unit` | `packages/*/test/*.test.ts` through `tsx --test` |
+| `pnpm test:coverage` | the unit tests under c8, failing below the floors in `.c8rc.json` |
+| `pnpm test:api` | `apps/api/tests` with pytest and pytest-cov, failing below `fail_under` in `apps/api/pyproject.toml` |
+| `pnpm test:e2e` | every screen in Chromium against a running `pnpm start`, failing on any request that leaves the machine |
+| `pnpm lint` | Biome over the TypeScript, Ruff over the Python |
+| `pnpm typecheck` | `tsc` in every package, after `pnpm --filter @ledger/web build` |
+| `pnpm audit:deps` | `pnpm audit` and `pip-audit` over the lockfiles, high severity and up |
+
+CI runs all of these on every push and pull request, see `.github/workflows/ci.yml`.
+
+## Configuration
+
+Every setting is optional, and the defaults run the demo as committed.
+`.env.example` lists each variable the code reads, with its default and the file that reads it.
+To change one, copy it to `apps/web/.env.local` and uncomment the line.
+
+| Variable | Read by | Default |
+|---|---|---|
+| `LEDGER_DATA_DIR` | web app, API | `data/demo` |
+| `LEDGER_LOCAL_DIR` | web app | `data/local` |
+| `LEDGER_EXAMINER` | web app | `EX-02` |
+| `LEDGER_WAREHOUSE_DIR` | API | `$LEDGER_DATA_DIR/parquet` |
+| `LEDGER_URL` | end-to-end test | `http://localhost:3157` |
+| `NEXT_PUBLIC_*`, `PRIVATE_TERMS`, `PRODUCT_SAY` | web app, recording, `pnpm check:names` | unset |
+
+### Display names
+
+Names for the demo video are local settings in `apps/web/.env.local`, which git ignores.
+The pre-commit hook in `.githooks` runs `pnpm check:names`, which refuses a commit that would publish any of them.
+
+## Architecture
+
+```text
+ data/demo submission      packages/submission      packages/claims + packages/detect        apps/web
+ manifest, claims,    ---> SHA-256 and row     ---> claim-to-query ledger,          ---> Next.js screens,
+ alert and case exports    counts, zod schemas      detectors, findings, risk            verdict and PDF routes
+        |                                                     ^                                |
+        +----> apps/api: Parquet warehouse ---> DuckDB SQL ---+ parity test                    v
+                                                                                         data/local
+```
 
 ```
 apps/web/            Next.js app, every screen, self-hosted fonts, no request leaves the machine
@@ -36,10 +126,12 @@ packages/claims/     each attested figure mapped to a query over the records, fi
 packages/detect/     SLA bunching, pasted notes, negative space, weekend coverage, repeat alerts
 packages/simulate/   a seeded SOC: analysts, shifts, queues, SLAs and the habits behind each finding
 packages/submission/ the submission contract, schemas and SHA-256 checked loader
-deploy/              one Docker image and a USB install for an air-gapped machine
+deploy/              the offline test, the USB bundle and its install script
 recording/           the scripted demo take and its voiceover
 ```
 
-[Architecture](docs/architecture.pdf) · [Methodology](docs/methodology.md) · [Validation](docs/validation.md) · [Requirements](docs/requirements.md) · [Research](docs/research.md)
+The full design is in [docs/architecture.md](docs/architecture.md), with a two-page [PDF](docs/architecture.pdf).
+
+[Methodology](docs/methodology.md) · [Validation](docs/validation.md) · [Requirements](docs/requirements.md) · [Research](docs/research.md) · [Contributing](CONTRIBUTING.md) · [Changelog](CHANGELOG.md)
 
 <sub>MIT licensed. Team 1, Saveetha Engineering College.</sub>
