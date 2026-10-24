@@ -103,3 +103,37 @@ def test_http_surface():
     assert c.get("/health").json()["network"] == "none required"
     assert len(c.get("/entities").json()) == 12
     assert c.get("/entities/P-04/ledger").json()["entity"]["code"] == "P-04"
+
+
+@pytest.mark.parametrize("code", ["p-04", "P-4", "P-004", "P-04.json", "P-04;drop"])
+def test_an_entity_code_outside_the_pattern_is_rejected(code):
+    r = TestClient(app).get(f"/entities/{code}/ledger")
+    assert r.status_code == 422, code
+
+
+def test_an_unknown_entity_is_a_404_not_a_missing_analysis():
+    r = TestClient(app).get("/entities/Z-99/ledger")
+    assert r.status_code == 404
+    assert r.json()["detail"] == "no entity Z-99"
+
+
+def test_a_malformed_quarter_is_rejected_before_any_query():
+    r = TestClient(app).get("/entities/P-04/ledger/sql", params={"quarter": "2027-Q1"})
+    assert r.status_code == 422
+
+
+def test_the_sql_ledger_route_recomputes_from_the_warehouse(warehouse, monkeypatch):
+    import ledger_api.app as service
+
+    monkeypatch.setattr(service, "warehouse_dir", lambda: warehouse)
+    body = TestClient(app).get("/entities/P-04/ledger/sql", params={"quarter": "FY27-Q1"}).json()
+    assert body["entity"] == "P-04" and body["quarter"] == "FY27-Q1"
+    got = {m["metric"]: m for m in body["metrics"]}
+    assert got["ot_critical_assets_monitored"]["matched"] == 0
+
+
+def test_the_sql_ledger_route_defaults_to_the_latest_quarter(warehouse, monkeypatch):
+    import ledger_api.app as service
+
+    monkeypatch.setattr(service, "warehouse_dir", lambda: warehouse)
+    assert TestClient(app).get("/entities/P-04/ledger/sql").json()["quarter"] == "FY27-Q1"

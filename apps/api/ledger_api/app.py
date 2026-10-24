@@ -6,13 +6,14 @@ import json
 import logging
 import time
 from dataclasses import asdict
+from typing import Annotated
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Path, Query, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from . import __version__
-from .ingest import IngestError, ingest
+from .ingest import ENTITY, QUARTER, IngestError, ingest
 from .ledger import connect, recompute
 from .logs import LOGGER, configure
 from .paths import data_dir, warehouse_dir
@@ -21,6 +22,9 @@ configure()
 log = logging.getLogger(f"{LOGGER}.http")
 
 app = FastAPI(title="SOC Claim Ledger", version=__version__)
+
+EntityCode = Annotated[str, Path(pattern=ENTITY.pattern, description="Entity code, such as P-04")]
+QuarterId = Annotated[str | None, Query(pattern=QUARTER.pattern, description="Quarter, such as FY27-Q1")]
 
 
 class ErrorBody(BaseModel):
@@ -70,12 +74,14 @@ def entities():
 
 
 @app.get("/entities/{code}/ledger")
-def ledger(code: str):
+def ledger(code: EntityCode):
+    if code not in {e["code"] for e in _derived("portfolio.json")["entries"]}:
+        raise HTTPException(404, f"no entity {code}")
     return _derived(f"entities/{code}.json")["assessment"]
 
 
 @app.get("/entities/{code}/ledger/sql")
-def ledger_sql(code: str, quarter: str | None = None):
+def ledger_sql(code: EntityCode, quarter: QuarterId = None):
     wh = warehouse_dir()
     if not wh.exists():
         raise HTTPException(503, "no warehouse yet, POST /ingest first")
