@@ -8,6 +8,7 @@ from dataclasses import asdict
 
 from .ingest import ingest
 from .ledger import connect, recompute
+from .logs import configure
 from .paths import data_dir, warehouse_dir
 
 
@@ -22,6 +23,7 @@ def main() -> None:
     sv.add_argument("--port", type=int, default=8157)
     sv.add_argument("--host", default="127.0.0.1")
     a = p.parse_args()
+    configure()
 
     if a.cmd == "ingest":
         done = ingest(data_dir(), warehouse_dir())
@@ -32,7 +34,8 @@ def main() -> None:
     else:
         import uvicorn
 
-        uvicorn.run("ledger_api.app:app", host=a.host, port=a.port)
+        # The app logs each request as JSON, so uvicorn's own access log would only repeat it.
+        uvicorn.run("ledger_api.app:app", host=a.host, port=a.port, access_log=False)
 
 
 if __name__ == "__main__":

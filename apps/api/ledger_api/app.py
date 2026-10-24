@@ -3,16 +3,53 @@
 from __future__ import annotations
 
 import json
+import logging
+import time
 from dataclasses import asdict
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel
 
 from . import __version__
-from .ingest import ingest
+from .ingest import IngestError, ingest
 from .ledger import connect, recompute
+from .logs import LOGGER, configure
 from .paths import data_dir, warehouse_dir
 
+configure()
+log = logging.getLogger(f"{LOGGER}.http")
+
 app = FastAPI(title="SOC Claim Ledger", version=__version__)
+
+
+class ErrorBody(BaseModel):
+    error: str
+    detail: str
+
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    """One log line per request, and a typed 500 with the cause logged when a handler fails."""
+    start = time.perf_counter()
+    ctx: dict[str, object] = {"method": request.method, "path": request.url.path}
+    try:
+        response = await call_next(request)
+    except Exception:
+        ctx.update(status=500, ms=round((time.perf_counter() - start) * 1000, 1))
+        log.exception("request failed", extra={"ctx": ctx})
+        body = ErrorBody(error="internal_error", detail=f"{request.method} {request.url.path} failed, see the service log")
+        return JSONResponse(body.model_dump(), status_code=500)
+    ctx.update(status=response.status_code, ms=round((time.perf_counter() - start) * 1000, 1))
+    log.info("request", extra={"ctx": ctx})
+    return response
+
+
+@app.exception_handler(IngestError)
+async def refused_export(request: Request, exc: IngestError) -> JSONResponse:
+    """A submission that does not match its manifest is the caller's data, not a server fault."""
+    log.warning("export refused", extra={"ctx": {"path": request.url.path, "reason": str(exc)}})
+    return JSONResponse(ErrorBody(error="export_refused", detail=str(exc)).model_dump(), status_code=422)
 
 
 def _derived(name: str):

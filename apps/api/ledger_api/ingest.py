@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -15,6 +16,8 @@ import duckdb
 
 ENTITY = re.compile(r"^[A-Z]-\d{2}$")
 QUARTER = re.compile(r"^FY\d{2}-Q[1-4]$")
+
+log = logging.getLogger("ledger_api.ingest")
 
 
 class IngestError(Exception):
@@ -69,4 +72,5 @@ def ingest(data: Path, warehouse: Path) -> list[Ingested]:
                 raise IngestError(f"{src}: {rows} rows, the manifest declares {entry['rows']}")
             con.execute(f"copy (select * from {reader(src)}) to '{dest}' (format parquet, compression zstd)")
             done.append(Ingested(entity, quarter, name, rows))
+            log.info("export ingested", extra={"ctx": {"entity": entity, "quarter": quarter, "export": name, "rows": rows}})
     return done
