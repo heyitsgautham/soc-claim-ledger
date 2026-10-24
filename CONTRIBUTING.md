@@ -21,7 +21,7 @@ pnpm test
 | A new attested metric | `packages/claims/src/catalogue.ts` and `apps/api/ledger_api/ledger.py` | `packages/claims/test`, and the parity test in `apps/api/tests` |
 | A new detector | `packages/detect/src`, registered in `registry.ts` | `packages/detect/test` |
 | A new behaviour in the simulated SOC | `packages/simulate/src` | `packages/simulate/test` |
-| A screen or component | `apps/web/src` | `apps/web/e2e/offline.test.ts` |
+| A screen or component | `apps/web/src` | `apps/web/test` for helpers and components, `apps/web/e2e/offline.test.ts` for screens |
 | An API route | `apps/api/ledger_api/app.py` | `apps/api/tests` |
 
 A metric has two implementations on purpose, one in TypeScript and one in DuckDB SQL.

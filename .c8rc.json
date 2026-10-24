@@ -1,12 +1,16 @@
 {
   "all": true,
-  "src": ["packages", "apps/web/src/lib"],
+  "src": ["packages", "apps/web/src"],
   "include": [
     "packages/*/src/**/*.ts",
     "apps/web/src/lib/format.ts",
     "apps/web/src/lib/scale.ts",
     "apps/web/src/lib/brand.ts",
-    "apps/web/src/lib/verdict-request.ts"
+    "apps/web/src/lib/verdict-request.ts",
+    "apps/web/src/components/quantity.tsx",
+    "apps/web/src/components/finding-text.tsx",
+    "apps/web/src/components/ledger/status-mark.tsx",
+    "apps/web/src/components/ledger/gap-track.tsx"
   ],
   "exclude": ["packages/*/src/**/cli.ts", "packages/*/src/**/types.ts", "packages/claims/src/model.ts"],
   "reporter": ["text-summary", "lcov"],
