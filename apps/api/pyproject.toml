@@ -10,7 +10,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest==8.4.1", "httpx==0.28.1", "ruff==0.12.7"]
+dev = ["pytest==8.4.1", "pytest-cov==7.1.0", "httpx==0.28.1", "ruff==0.12.7"]
 
 [build-system]
 requires = ["setuptools>=68"]
@@ -30,3 +30,12 @@ select = ["E", "F", "I", "B", "UP", "SIM"]
 testpaths = ["tests"]
 pythonpath = ["."]
 filterwarnings = ["ignore::DeprecationWarning"]
+addopts = "--cov=ledger_api --cov-report=term-missing:skip-covered"
+
+[tool.coverage.run]
+branch = true
+omit = ["ledger_api/__main__.py"]
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true

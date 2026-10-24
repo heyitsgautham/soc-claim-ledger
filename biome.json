@@ -10,7 +10,8 @@
 			"!**/*.css",
 			"!apps/api",
 			"!**/next-env.d.ts",
-			"!docs/.build"
+			"!docs/.build",
+			"!coverage"
 		]
 	},
 	"formatter": {

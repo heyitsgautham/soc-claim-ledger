@@ -30,6 +30,10 @@ recording/videos/
 *.webm
 *.mkv
 
+# coverage reports from pnpm coverage and pytest
+coverage/
+.coverage
+
 # misc
 docs/.build/
 test-results/
