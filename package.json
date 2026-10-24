@@ -26,6 +26,7 @@
     "test:e2e": "tsx --test apps/web/e2e/*.test.ts",
     "lint": "biome lint . && pnpm --filter @ledger/api lint",
     "test:api": "pnpm --filter @ledger/api test",
+    "audit:deps": "pnpm audit --audit-level=high && pnpm --filter @ledger/api run audit",
     "api:setup": "pnpm --filter @ledger/api run setup",
     "docs:pdf": "tsx docs/build-pdf.ts",
     "bootstrap": "pnpm install && pnpm api:setup",

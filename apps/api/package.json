@@ -7,6 +7,7 @@
     "setup": "uv sync --locked --extra dev --python 3.12",
     "lint": ".venv/bin/ruff check ledger_api tests",
     "test": ".venv/bin/pytest -q",
+    "audit": "uv export --locked --extra dev --no-emit-project --quiet -o \"${TMPDIR:-/tmp}/ledger-api-requirements.txt\" && uvx --from pip-audit==2.10.1 pip-audit --require-hashes --disable-pip -r \"${TMPDIR:-/tmp}/ledger-api-requirements.txt\"",
     "typecheck": ".venv/bin/python -m compileall -q ledger_api",
     "ingest": ".venv/bin/python -m ledger_api ingest",
     "serve": ".venv/bin/python -m ledger_api serve"
