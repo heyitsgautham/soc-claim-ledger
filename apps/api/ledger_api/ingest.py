@@ -47,7 +47,7 @@ def reader(src: Path) -> str:
     """The DuckDB table function that reads one export, chosen by its file name."""
     path = str(src).replace("'", "''")
     name = src.name.removesuffix(".gz")
-    compression = "gzip" if src.name.endswith(".gz") else "none"
+    compression = "gzip" if src.name.endswith(".gz") else "uncompressed"
     if name.endswith(".csv"):
         return f"read_csv('{path}', header = true, auto_detect = true, compression = '{compression}')"
     if name.endswith((".ndjson", ".jsonl", ".json")):
