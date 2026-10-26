@@ -122,6 +122,20 @@ To change one, copy it to `apps/web/.env.local` and fill in the line.
 Names for the demo video are local settings in `apps/web/.env.local`, which git ignores.
 The pre-commit hook in `.githooks` runs `pnpm check:names`, which refuses a commit that would publish any of them.
 
+## Troubleshooting
+
+| What you see | Cause | Fix |
+|---|---|---|
+| A screen reads "This screen could not be drawn from the analysis on this machine" | `data/demo/derived` is missing | `pnpm simulate && pnpm analyse`, then Try again |
+| `GET /api/health` answers 503 | the same, the body names the missing file | the same |
+| Export PDF says Chromium is not installed | Playwright's browser is not on this machine | `pnpm exec playwright install chromium` |
+| Recording a verdict says it was not saved | `data/local`, or `LEDGER_LOCAL_DIR`, is not writable | fix the folder's permissions, the message names the file |
+| `GET /entities/{code}/ledger/sql` answers 503 | no Parquet warehouse yet | `pnpm --filter @ledger/api ingest`, or `POST /ingest` |
+| `pnpm test:api` says `.venv/bin/pytest` is not found | the API's virtualenv was never made | `pnpm api:setup`, which `pnpm bootstrap` also runs |
+
+Every failure on either server is one JSON line in its log, the web app's on stdout and the API's on stderr.
+Search the web log for the digest a failed screen shows, and the API log for the `request_id` a failed call returns.
+
 ## Architecture
 
 ```text
