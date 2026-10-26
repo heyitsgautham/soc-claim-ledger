@@ -22,12 +22,25 @@ def _view(con: duckdb.DuckDBPyConnection, warehouse: Path, name: str) -> None:
     con.execute(f"create or replace view {name} as select * from read_parquet('{warehouse / name}/**/*.parquet', hive_partitioning = true)")
 
 
+EXPORTS = ("alerts", "cases", "escalations", "assets", "log_sources", "analysts", "rules")
+
+
 def connect(warehouse: Path) -> duckdb.DuckDBPyConnection:
     con = duckdb.connect()
-    for name in ("alerts", "cases", "escalations", "assets", "log_sources", "analysts"):
+    for name in EXPORTS:
         if (warehouse / name).exists():
             _view(con, warehouse, name)
     return con
+
+
+def quarters(con: duckdb.DuckDBPyConnection, entity: str) -> list[str]:
+    """Every quarter the entity submitted any export for, oldest first.
+    An entity may leave an export out, so no single table answers this."""
+    views = [r[0] for r in con.execute("select view_name from duckdb_views() where not internal").fetchall() if r[0] in EXPORTS]
+    if not views:
+        return []
+    union = " union ".join(f"select distinct quarter from {v} where entity = $entity" for v in views)
+    return [r[0] for r in con.execute(f"select quarter from ({union}) order by quarter", {"entity": entity}).fetchall()]
 
 
 def _ts(col: str) -> str:
@@ -78,14 +91,35 @@ QUERIES: dict[str, str] = {
 }
 
 
+# The exports each metric needs in the attested quarter, the same lists as `requires` in
+# packages/claims/src/metrics. Without one of them the claim is insufficient evidence,
+# not a measured zero, so the metric is left out.
+REQUIRES: dict[str, tuple[str, ...]] = {
+    "p1_escalated_to_l2_within_30m": ("cases", "escalations", "rules", "assets"),
+    "p1_mean_time_to_close": ("cases", "rules", "assets"),
+    "p1_mean_time_to_acknowledge": ("alerts",),
+    "p2_closed_within_sla": ("cases",),
+    "ot_critical_assets_monitored": ("assets", "alerts", "log_sources"),
+    "l1_analysts_on_roster": ("analysts",),
+}
+
+
+def submitted(con: duckdb.DuckDBPyConnection, entity: str, quarter: str) -> set[str]:
+    """The exports that hold at least one record for this entity and quarter."""
+    views = [r[0] for r in con.execute("select view_name from duckdb_views() where not internal").fetchall() if r[0] in EXPORTS]
+    params = {"entity": entity, "quarter": quarter}
+    return {v for v in views if con.execute(f"select 1 from {v} where entity = $entity and quarter = $quarter limit 1", params).fetchone()}
+
+
 def recompute(con: duckdb.DuckDBPyConnection, entity: str, quarter: str) -> list[Recomputed]:
     out = []
+    present = submitted(con, entity, quarter)
     for metric, sql in QUERIES.items():
-        try:
-            row = con.execute(sql, {"entity": entity, "quarter": quarter}).fetchone()
-        except duckdb.CatalogException:
-            continue  # the export this metric needs was not submitted
-        if row is None or row[0] is None:
+        if not set(REQUIRES[metric]) <= present:
+            continue
+        row = con.execute(sql, {"entity": entity, "quarter": quarter}).fetchone()
+        # No records to measure, such as a share of zero critical OT assets, is no evidence, not NaN.
+        if row is None or row[0] is None or not row[2]:
             continue
         out.append(Recomputed(metric, float(row[0]), None if row[1] is None else int(row[1]), int(row[2])))
     return out

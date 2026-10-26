@@ -16,7 +16,7 @@ from pydantic import BaseModel
 
 from . import __version__, metrics
 from .ingest import ENTITY, QUARTER, IngestError, ingest
-from .ledger import connect, recompute
+from .ledger import connect, quarters, recompute
 from .logs import LOGGER, configure, request_id
 from .paths import data_dir, warehouse_dir
 
@@ -111,9 +111,12 @@ def ledger_sql(code: EntityCode, quarter: QuarterId = None):
     if not wh.exists():
         raise HTTPException(503, "no warehouse yet, POST /ingest first")
     con = connect(wh)
-    q = quarter or con.execute("select max(quarter) from cases where entity = ?", [code]).fetchone()[0]
-    if q is None:
+    submitted = quarters(con, code)
+    if not submitted:
         raise HTTPException(404, f"no submissions for {code}")
+    q = quarter or submitted[-1]
+    if q not in submitted:
+        raise HTTPException(404, f"no {q} submission for {code}, it submitted {', '.join(submitted)}")
     return {"entity": code, "quarter": q, "metrics": [asdict(r) for r in recompute(con, code, q)]}
 
 
