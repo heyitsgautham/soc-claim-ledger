@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import { chromium } from "playwright-core";
 import { entityCodes, loadEntity, localDir, recordAudit } from "@/lib/data";
 import { examinerId } from "@/lib/env";
+import { log } from "@/lib/log";
 
 // Renders the report page to an A4 PDF with the Chromium already on this machine and
 // files it under data/local/reports. The browser loads only this server's own pages.
@@ -49,8 +50,11 @@ export async function POST(req: Request, { params }: { params: Promise<{ code: s
       subject: `${code} ${file}`,
       detail: `${pages} pages, SHA-256 ${sha256.slice(0, 16)}`,
     });
-    return NextResponse.json({ file, pages, bytes: pdf.length, sha256, seconds: (performance.now() - started) / 1000, href: `/api/report/${code}` });
+    const seconds = (performance.now() - started) / 1000;
+    log.info({ entity: code, file, pages, bytes: pdf.length, seconds }, "report exported");
+    return NextResponse.json({ file, pages, bytes: pdf.length, sha256, seconds, href: `/api/report/${code}` });
   } catch (e) {
+    log.error({ entity: code, err: e }, "report export failed");
     return NextResponse.json({ error: e instanceof Error ? e.message : String(e) }, { status: 500 });
   } finally {
     await browser.close();

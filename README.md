@@ -48,6 +48,7 @@ pnpm dev         # the same data, with the Next.js dev server
 
 `pnpm simulate` writes twelve seeded SOC submissions to `data/demo`, and `pnpm analyse` writes what the screens show to `data/demo/derived`.
 The web app only renders that output, so both must run before the first build, and the two scripts above run them first.
+The web server logs each recorded or refused verdict and each report export to stdout through pino, one JSON object per line.
 
 The FastAPI service is separate, and the screens do not need it.
 
@@ -109,6 +110,7 @@ To change one, copy it to `apps/web/.env.local` and fill in the line.
 | `LEDGER_DATA_DIR` | web app, API | `data/demo` |
 | `LEDGER_LOCAL_DIR` | web app | `data/local` |
 | `LEDGER_EXAMINER` | web app | `EX-02` |
+| `LOG_LEVEL` | web app | `info` |
 | `LEDGER_WAREHOUSE_DIR` | API | `$LEDGER_DATA_DIR/parquet` |
 | `LEDGER_URL` | end-to-end test | `http://localhost:3157` |
 | `NEXT_PUBLIC_*`, `PRIVATE_TERMS`, `PRODUCT_SAY` | web app, recording, `pnpm check:names` | unset |

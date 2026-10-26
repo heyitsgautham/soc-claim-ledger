@@ -45,6 +45,8 @@ export default defineConfig({
         "apps/web/src/lib/brand.ts",
         "apps/web/src/lib/data.ts",
         "apps/web/src/lib/env.ts",
+        "apps/web/src/lib/log.ts",
+        "apps/web/src/app/api/verdicts/route.ts",
         "apps/web/src/lib/verdict-request.ts",
         "apps/web/src/components/quantity.tsx",
         "apps/web/src/components/finding-text.tsx",

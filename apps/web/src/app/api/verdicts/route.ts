@@ -2,6 +2,7 @@ import type { Verdict } from "@ledger/claims/model";
 import { NextResponse } from "next/server";
 import { entityCodes, loadEntity, localVerdicts, recordAudit, recordVerdict } from "@/lib/data";
 import { examinerId } from "@/lib/env";
+import { log } from "@/lib/log";
 import { parseVerdictRequest, VERDICT_REQUEST_ERROR } from "@/lib/verdict-request";
 
 // Blind verdict entry. The browser sends only which record and which verdict. The server
@@ -23,11 +24,11 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   const body = parseVerdictRequest(await req.json().catch(() => null));
-  if (!body) return NextResponse.json({ error: VERDICT_REQUEST_ERROR }, { status: 400 });
-  if (!entityCodes().includes(body.entity)) return NextResponse.json({ error: `no entity ${body.entity}` }, { status: 404 });
+  if (!body) return refuse(400, VERDICT_REQUEST_ERROR);
+  if (!entityCodes().includes(body.entity)) return refuse(404, `no entity ${body.entity}`);
   const analysis = loadEntity(body.entity);
   const item = analysis.samples.items.find((i) => i.key === body.itemKey);
-  if (!item) return NextResponse.json({ error: `${body.itemKey} is not on the ${body.entity} sample sheet` }, { status: 404 });
+  if (!item) return refuse(404, `${body.itemKey} is not on the ${body.entity} sample sheet`);
   const examiner = examinerId();
   const detectors = item.reasons.map((r) => r.detector).filter((d, i, all) => all.findIndex((x) => x.id === d.id) === i);
   const v: Verdict = {
@@ -52,5 +53,11 @@ export async function POST(req: Request) {
     subject: `${v.entity} ${v.recordId}`,
     detail: `${v.verdict.replace("_", " ")}, blind, ${detectors.length ? `${detectors.length} detector${detectors.length > 1 ? "s" : ""}` : `${v.pick} pick`}`,
   });
+  log.info({ entity: v.entity, recordId: v.recordId, verdict: v.verdict, examiner, detectors: detectors.length }, "verdict recorded");
   return NextResponse.json({ verdict: v, item });
+}
+
+function refuse(status: 400 | 404, error: string) {
+  log.warn({ status, reason: error }, "verdict refused");
+  return NextResponse.json({ error }, { status });
 }
