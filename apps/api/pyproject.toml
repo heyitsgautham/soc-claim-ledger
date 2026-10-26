@@ -36,7 +36,7 @@ python_version = "3.11"
 testpaths = ["tests"]
 pythonpath = ["."]
 filterwarnings = ["ignore::DeprecationWarning"]
-addopts = "--cov=ledger_api --cov-report=term-missing:skip-covered"
+addopts = "--cov=ledger_api --cov-report=term-missing:skip-covered --cov-report=json:coverage/coverage.json --cov-report=xml:coverage/coverage.xml"
 
 [tool.coverage.run]
 branch = true

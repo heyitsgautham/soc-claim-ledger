@@ -39,12 +39,24 @@ jobs:
           pnpm test:e2e
       - name: Architecture PDF, two pages at most
         run: pnpm docs:pdf
+      - name: Coverage summary
+        if: always()
+        run: |
+          {
+            echo "| Suite | Lines | Branches | Functions |"
+            echo "|---|---|---|---|"
+            jq -r '.total | "| TypeScript, Vitest | \(.lines.pct)% | \(.branches.pct)% | \(.functions.pct)% |"' coverage/coverage-summary.json
+            jq -r '.totals | "| Python, pytest | \(.percent_statements_covered_display)% | \(.percent_branches_covered_display)% | not measured |"' apps/api/coverage/coverage.json
+          } >> "$GITHUB_STEP_SUMMARY"
       - name: Coverage report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: coverage
-          path: coverage/lcov.info
+          path: |
+            coverage/lcov.info
+            coverage/coverage-summary.json
+            apps/api/coverage/coverage.xml
           if-no-files-found: ignore
 
   audit:
