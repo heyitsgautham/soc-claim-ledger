@@ -24,7 +24,7 @@
     "test:web": "vitest run --project web",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "vitest run --config vitest.e2e.config.ts",
-    "lint": "biome check . && pnpm --filter @ledger/api lint",
+    "lint": "biome check --error-on-warnings . && pnpm --filter @ledger/api lint",
     "test:api": "pnpm --filter @ledger/api test",
     "audit:deps": "pnpm audit --audit-level=high && pnpm --filter @ledger/api run audit",
     "api:setup": "pnpm --filter @ledger/api run setup",

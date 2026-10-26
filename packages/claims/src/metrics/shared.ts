@@ -1,5 +1,5 @@
 import { closureHistogram } from "@ledger/detect";
-import { type AssetClass, type Case, type Disposition, type ExportName, type Priority } from "@ledger/submission";
+import type { AssetClass, Case, Disposition, ExportName, Priority } from "@ledger/submission";
 import { type Indexed, mean, minutesBetween, mode } from "../context";
 import type { Measure, MeasureKind } from "../schema";
 import { SEVERITY, type Sector } from "@ledger/submission/constants";
