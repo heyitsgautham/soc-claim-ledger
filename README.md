@@ -53,13 +53,14 @@ The FastAPI service is separate, and the screens do not need it.
 
 ```bash
 pnpm --filter @ledger/api ingest   # verify each export's SHA-256 and write the Parquet warehouse
-pnpm --filter @ledger/api serve    # http://127.0.0.1:8157/health, /entities, /entities/P-04/ledger/sql
+pnpm --filter @ledger/api serve    # http://127.0.0.1:8157/health, /metrics, /entities, /entities/P-04/ledger/sql
 ```
 
 The API writes one JSON object per request to stderr, with method, path, status, milliseconds and a request ID.
 It keeps the caller's `X-Request-ID` when it is plain and at most 64 characters, makes one up otherwise, and echoes it in the response.
 Every line logged while a request is served carries that ID.
 A failed request also logs its traceback and answers `{"error": ..., "detail": ..., "request_id": ...}`.
+`GET /metrics` serves request counts and latencies by route template, rows ingested by export and refused ingest runs, in the Prometheus text format.
 
 ### Docker
 

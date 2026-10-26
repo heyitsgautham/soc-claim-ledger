@@ -11,10 +11,10 @@ from dataclasses import asdict
 from typing import Annotated
 
 from fastapi import FastAPI, HTTPException, Path, Query, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel
 
-from . import __version__
+from . import __version__, metrics
 from .ingest import ENTITY, QUARTER, IngestError, ingest
 from .ledger import connect, recompute
 from .logs import LOGGER, configure, request_id
@@ -61,6 +61,8 @@ async def log_requests(request: Request, call_next):
             log.info("request", extra={"ctx": ctx})
     finally:
         request_id.reset(token)
+    route = getattr(request.scope.get("route"), "path", metrics.UNMATCHED)
+    metrics.observe(request.method, route, response.status_code, time.perf_counter() - start)
     response.headers["X-Request-ID"] = rid
     return response
 
@@ -68,6 +70,7 @@ async def log_requests(request: Request, call_next):
 @app.exception_handler(IngestError)
 async def refused_export(request: Request, exc: IngestError) -> JSONResponse:
     """A submission that does not match its manifest is the caller's data, not a server fault."""
+    metrics.REFUSED_EXPORTS.inc()
     log.warning("export refused", extra={"ctx": {"path": request.url.path, "reason": str(exc)}})
     return JSONResponse(ErrorBody(error="export_refused", detail=str(exc), request_id=request_id.get()).model_dump(), status_code=422)
 
@@ -82,6 +85,12 @@ def _derived(name: str):
 @app.get("/health")
 def health():
     return {"status": "ok", "version": __version__, "network": "none required"}
+
+
+@app.get("/metrics", include_in_schema=False)
+def prometheus_metrics() -> Response:
+    """Request counts and latencies by route, and ingest totals, for a local Prometheus to scrape."""
+    return Response(metrics.render(), media_type=metrics.CONTENT_TYPE)
 
 
 @app.get("/entities")
@@ -116,4 +125,6 @@ def calibration():
 @app.post("/ingest")
 def run_ingest():
     done = ingest(data_dir(), warehouse_dir())
+    for d in done:
+        metrics.INGESTED_ROWS.labels(d.export).inc(d.rows)
     return {"exports": len(done), "rows": sum(d.rows for d in done)}
