@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { NextResponse } from "next/server";
-import { chromium } from "playwright-core";
+import { type Browser, chromium } from "playwright-core";
 import { entityCodes, loadEntity, localDir, recordAudit } from "@/lib/data";
 import { examinerId } from "@/lib/env";
 import { log } from "@/lib/log";
@@ -12,6 +12,8 @@ import { log } from "@/lib/log";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+
+const NO_CHROMIUM = "Chromium is not installed on this machine. Run pnpm exec playwright install chromium, then export again.";
 
 function fileFor(code: string, cycle: string): string {
   return `SR-${code.replace("-", "")}-${cycle.replace("-", "")}.pdf`;
@@ -28,7 +30,13 @@ export async function POST(req: Request, { params }: { params: Promise<{ code: s
   const a = loadEntity(code);
   const origin = new URL(req.url).origin;
   const started = performance.now();
-  const browser = await chromium.launch({ headless: true });
+  let browser: Browser;
+  try {
+    browser = await chromium.launch({ headless: true });
+  } catch (e) {
+    log.error({ entity: code, err: e }, "report export failed, no Chromium");
+    return NextResponse.json({ error: NO_CHROMIUM }, { status: 503 });
+  }
   try {
     const context = await browser.newContext();
     // The render may only reach this server.

@@ -38,8 +38,9 @@ export function ExportPanel({ code, docId, machine }: { code: string; docId: str
     setError("");
     try {
       const res = await fetch(`/api/report/${code}`, { method: "POST" });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error ?? res.statusText);
+      // A server that failed before answering in JSON still gets its status shown, not a parse error.
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(json.error ?? `Export failed, the server answered ${res.status} ${res.statusText}`.trim());
       setResult(json as Exported);
       setState("done");
     } catch (e) {
