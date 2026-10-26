@@ -1,17 +1,19 @@
 import assert from "node:assert/strict";
-import { test } from "node:test";
+import { afterEach, test, vi } from "vitest";
+
+const NAMES = ["NEXT_PUBLIC_PRODUCT", "NEXT_PUBLIC_PS", "NEXT_PUBLIC_EVENT", "NEXT_PUBLIC_EVENT_NAME", "NEXT_PUBLIC_TAGLINE"];
 
 // brand.ts reads the environment once, when it loads, so each case loads a fresh copy.
 async function load(env: Record<string, string>) {
-  const saved = { ...process.env };
-  for (const k of Object.keys(process.env)) if (k.startsWith("NEXT_PUBLIC_")) delete process.env[k];
-  Object.assign(process.env, env);
-  try {
-    return await import(`../src/lib/brand.ts?case=${Math.random()}`);
-  } finally {
-    process.env = saved;
-  }
+  for (const k of NAMES) vi.stubEnv(k, undefined);
+  for (const [k, v] of Object.entries(env)) vi.stubEnv(k, v);
+  vi.resetModules();
+  return await import("../src/lib/brand");
 }
+
+afterEach(() => {
+  vi.unstubAllEnvs();
+});
 
 test("without local names the app shows the neutral product name and no event", async () => {
   const { BRAND, orgLine, pageTitle } = await load({});

@@ -74,18 +74,18 @@ One command runs the whole suite from a fresh clone, after `pnpm bootstrap`.
 pnpm test
 ```
 
-It simulates and analyses the demo data, runs the TypeScript unit tests with `node:test`, then the API tests with pytest.
+It simulates and analyses the demo data, runs the TypeScript unit tests with Vitest under v8 coverage, then the API tests with pytest under pytest-cov.
+Either side fails the run when its coverage drops below its floor.
 The pytest run includes the parity test that holds the SQL ledger and the TypeScript ledger to the same numbers for every entity.
 
 | Command | What it runs |
 |---|---|
-| `pnpm test` | simulate, analyse, `test:unit`, `test:api` |
-| `pnpm coverage` | the same, with the unit tests under c8 |
-| `pnpm test:unit` | `packages/*/test/*.test.ts` through `tsx --test`, then `pnpm test:web` |
-| `pnpm test:web` | `apps/web/test`, the web helpers and server-rendered components, under the web app's tsconfig |
-| `pnpm test:coverage` | the unit tests under c8, failing below the floors in `.c8rc.json` |
+| `pnpm test` | simulate, analyse, `test:coverage`, `test:api` |
+| `pnpm test:unit` | every Vitest project in `vitest.config.ts`, `packages/*/test` and `apps/web/test`, without coverage |
+| `pnpm test:web` | only the `web` project, the web helpers and server-rendered components |
+| `pnpm test:coverage` | the unit tests under v8 coverage, failing below the thresholds in `vitest.config.ts` |
 | `pnpm test:api` | `apps/api/tests` with pytest and pytest-cov, failing below `fail_under` in `apps/api/pyproject.toml` |
-| `pnpm test:e2e` | every screen in Chromium against a running `pnpm start`, failing on any request that leaves the machine |
+| `pnpm test:e2e` | every screen in Chromium against a running `pnpm start`, failing on any request that leaves the machine, through `vitest.e2e.config.ts` |
 | `pnpm lint` | Biome lint and format check over the TypeScript, Ruff check and format check over the Python |
 | `pnpm format` | rewrites both sides with Biome and Ruff |
 | `pnpm typecheck` | `tsc` in every package, after `pnpm --filter @ledger/web build` |

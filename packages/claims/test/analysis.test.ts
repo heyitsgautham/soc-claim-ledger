@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import path from "node:path";
-import { test } from "node:test";
+import { test } from "vitest";
 import { analyseEntity, drawSamples, extentOf, riskIndicator, type SupervisoryFinding, Workspace } from "../src/index";
 
 const ws = new Workspace(path.resolve(import.meta.dirname, "../../../data/demo"));

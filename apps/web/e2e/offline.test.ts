@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { after, before, test } from "node:test";
+import { afterAll, beforeAll, test } from "vitest";
 import { type Browser, type BrowserContext, chromium, type Page } from "playwright";
 
 // The offline guarantee, tested. Every screen is opened and driven in a browser that
@@ -13,7 +13,7 @@ let browser: Browser;
 let context: BrowserContext;
 let page: Page;
 
-before(async () => {
+beforeAll(async () => {
   browser = await chromium.launch();
   context = await browser.newContext({ viewport: { width: 1920, height: 1080 } });
   await context.route("**/*", (route) => {
@@ -31,7 +31,7 @@ before(async () => {
   });
 });
 
-after(async () => {
+afterAll(async () => {
   await browser?.close();
 });
 

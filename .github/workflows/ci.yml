@@ -26,12 +26,8 @@ jobs:
           pnpm exec playwright install --with-deps chromium
       - name: Lint
         run: pnpm lint
-      - name: Simulate and analyse
-        run: pnpm simulate && pnpm analyse
-      - name: Unit tests with coverage
-        run: pnpm test:coverage
-      - name: API tests with coverage, SQL ledger parity
-        run: pnpm test:api
+      - name: Test
+        run: pnpm test
       - name: Production build
         run: pnpm --filter @ledger/web build
       - name: Typecheck

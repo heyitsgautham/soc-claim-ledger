@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { test } from "node:test";
+import { test } from "vitest";
 import type { Alert, Case } from "@ledger/submission";
 import { repeatNoRemediation, weekendCoverage } from "../src/index";
 

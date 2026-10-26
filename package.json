@@ -12,8 +12,7 @@
     "build": "pnpm simulate && pnpm analyse && pnpm --filter @ledger/web build",
     "start": "pnpm --filter @ledger/web start",
     "demo": "pnpm build && pnpm start",
-    "test": "pnpm simulate && pnpm analyse && pnpm test:unit && pnpm test:api",
-    "coverage": "pnpm simulate && pnpm analyse && pnpm test:coverage && pnpm test:api",
+    "test": "pnpm simulate && pnpm analyse && pnpm test:coverage && pnpm test:api",
     "typecheck": "pnpm -r typecheck && tsc -p tsconfig.json",
     "take": "tsx recording/take.ts",
     "ledger": "tsx packages/claims/src/cli.ts",
@@ -21,10 +20,10 @@
     "record": "tsx recording/record.ts",
     "voiceover": "tsx recording/voiceover.ts",
     "mux": "tsx recording/mux.ts",
-    "test:unit": "tsx --test packages/*/test/*.test.ts && pnpm test:web",
-    "test:web": "tsx --tsconfig apps/web/tsconfig.json --test apps/web/test/*.test.ts apps/web/test/*.test.tsx",
-    "test:coverage": "c8 sh -c 'tsx --test packages/*/test/*.test.ts && tsx --tsconfig apps/web/tsconfig.json --test apps/web/test/*.test.ts apps/web/test/*.test.tsx'",
-    "test:e2e": "tsx --test apps/web/e2e/*.test.ts",
+    "test:unit": "vitest run",
+    "test:web": "vitest run --project web",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "vitest run --config vitest.e2e.config.ts",
     "lint": "biome check . && pnpm --filter @ledger/api lint",
     "test:api": "pnpm --filter @ledger/api test",
     "audit:deps": "pnpm audit --audit-level=high && pnpm --filter @ledger/api run audit",
@@ -41,10 +40,11 @@
     "@ffprobe-installer/ffprobe": "^2.1.2",
     "@ledger/claims": "workspace:*",
     "@types/node": "24.13.6",
-    "c8": "12.0.0",
+    "@vitest/coverage-v8": "4.1.11",
     "marked": "18.0.14",
     "playwright": "1.63.0",
     "tsx": "4.23.15",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "vitest": "4.1.11"
   }
 }

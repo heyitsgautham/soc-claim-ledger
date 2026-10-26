@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { test } from "node:test";
+import { test } from "vitest";
 import { pct as clamp, track } from "../src/lib/scale";
 import { count, frac, mins, pct, row } from "./fixtures";
 

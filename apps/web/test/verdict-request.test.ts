@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { test } from "node:test";
+import { test } from "vitest";
 import { parseVerdictRequest } from "../src/lib/verdict-request";
 
 test("a well-formed verdict passes through unchanged", () => {

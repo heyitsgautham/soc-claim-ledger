@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { cpSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { test } from "node:test";
+import { test } from "vitest";
 import { decodeExport, encodeExport, loadSubmission, SubmissionError } from "../src/index";
 
 const demo = path.resolve(import.meta.dirname, "../../../data/demo/P-04/FY27-Q1");

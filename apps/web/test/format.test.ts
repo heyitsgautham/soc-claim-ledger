@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { test } from "node:test";
+import { test } from "vitest";
 import { day, duration, durationShort, int, istShort, measure, parts, period, plural, recomputed, variance, varianceParts } from "../src/lib/format";
 import { count, frac, mins, pct, row } from "./fixtures";
 

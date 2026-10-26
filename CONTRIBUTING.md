@@ -33,7 +33,7 @@ Run `pnpm format` first, then what CI runs.
 
 ```bash
 pnpm lint
-pnpm coverage                       # fails below the floors in .c8rc.json and apps/api/pyproject.toml
+pnpm test                          # fails below the floors in vitest.config.ts and apps/api/pyproject.toml
 pnpm --filter @ledger/web build
 pnpm typecheck
 pnpm start & pnpm test:e2e          # stop the server afterwards

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { test } from "node:test";
+import { test } from "vitest";
 import { buildInventory, entityByCode, QUARTERS, simulateQuarter } from "../src/index";
 
 const digest = (x: unknown) => createHash("sha256").update(JSON.stringify(x)).digest("hex");

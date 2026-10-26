@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { test } from "node:test";
+import { test } from "vitest";
 import { calibrate, cycleStartIso, priorPrecision, type Verdict, type VerdictValue } from "../src/index";
 
 let n = 0;
