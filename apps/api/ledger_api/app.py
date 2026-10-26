@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import re
 import time
 import uuid
@@ -101,10 +102,16 @@ async def refused_export(request: Request, exc: IngestError) -> JSONResponse:
 
 
 def _derived(name: str) -> Any:
-    path = data_dir() / "derived" / name
-    if not path.exists():
+    """A file pnpm analyse wrote. The routes validate entity codes first, and the path is
+    checked again here, so no name can read outside data/demo/derived."""
+    base = os.path.realpath(data_dir() / "derived")
+    path = os.path.realpath(os.path.join(base, name))
+    if not path.startswith(base + os.sep):
+        raise HTTPException(404, f"{name} is not part of the analysis")
+    if not os.path.exists(path):
         raise HTTPException(503, f"{path} is missing, run pnpm analyse")
-    return json.loads(path.read_text())
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
 
 
 @app.get("/health")

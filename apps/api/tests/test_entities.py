@@ -71,3 +71,17 @@ def test_the_openapi_schema_types_each_json_response(client):
     assert ok("/ingest", "post") == {"$ref": "#/components/schemas/IngestResult"}
     metric = spec["components"]["schemas"]["RecomputedMetric"]
     assert metric["required"] == ["metric", "value", "matched", "population"]
+
+
+@pytest.mark.parametrize("name", ["../portfolio.json", "entities/../../P-04/FY27-Q1/manifest.json", "/etc/hosts"])
+def test_a_derived_name_cannot_reach_outside_the_analysis(name):
+    from fastapi import HTTPException
+
+    with pytest.raises(HTTPException) as refused:
+        service._derived(name)
+    assert refused.value.status_code == 404
+    assert refused.value.detail == f"{name} is not part of the analysis"
+
+
+def test_a_derived_name_inside_the_analysis_still_reads():
+    assert service._derived("entities/../portfolio.json")["cycle"] == derived("portfolio.json")["cycle"]
