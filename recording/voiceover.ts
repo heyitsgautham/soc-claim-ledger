@@ -60,7 +60,8 @@ export function sayNumber(n: number): string {
   if (n < 20) return ONES[n]!;
   if (n < 100) return TENS[Math.floor(n / 10)]! + (n % 10 ? ` ${ONES[n % 10]}` : "");
   if (n < 1000) return `${ONES[Math.floor(n / 100)]} hundred${n % 100 ? ` ${sayNumber(n % 100)}` : ""}`;
-  return `${sayNumber(Math.floor(n / 1000))} thousand${n % 1000 ? ` ${sayNumber(n % 1000)}` : ""}`;
+  if (n < 1_000_000) return `${sayNumber(Math.floor(n / 1000))} thousand${n % 1000 ? ` ${sayNumber(n % 1000)}` : ""}`;
+  return `${sayNumber(Math.floor(n / 1_000_000))} million${n % 1_000_000 ? ` ${sayNumber(n % 1_000_000)}` : ""}`;
 }
 
 // The line as it is spoken, names and numbers spelled out.
