@@ -21,6 +21,9 @@ const READS = [
   /os\.getenv\(["']([A-Z][A-Z0-9_]*)["']/g,
 ];
 
+// Variables the runtime sets itself, which nobody configures.
+const SET_BY_RUNTIME = new Set(["NEXT_RUNTIME", "NODE_ENV"]);
+
 // Unit tests stub made-up variables to exercise the readers, so they are not readers themselves.
 const isUnitTest = (f: string) => /(^|\/)tests?\//.test(f);
 
@@ -66,7 +69,7 @@ test("the readers find each way the code reads a variable", () => {
 test(".env.example lists every variable the code reads, and nothing else", () => {
   const read = readByCode();
   const listed = new Set(variablesListed(readFileSync(path.join(ROOT, ".env.example"), "utf8")));
-  const missing = [...read].filter(([v]) => !listed.has(v)).map(([v, files]) => `${v} (read in ${files.join(", ")})`);
+  const missing = [...read].filter(([v]) => !listed.has(v) && !SET_BY_RUNTIME.has(v)).map(([v, files]) => `${v} (read in ${files.join(", ")})`);
   assert.deepEqual(missing, [], `add these to .env.example: ${missing.join("; ")}`);
   const stale = [...listed].filter((v) => !read.has(v));
   assert.deepEqual(stale, [], `nothing reads these any more, drop them from .env.example: ${stale.join(", ")}`);

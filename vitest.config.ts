@@ -40,7 +40,7 @@ export default defineConfig({
       provider: "v8",
       // Every module the tests can reach: the packages, and the web app's helpers, components and API routes.
       // The pages are server components that read the disk, and the end-to-end test covers them.
-      include: ["packages/*/src/**/*.ts", "apps/web/src/lib/**", "apps/web/src/components/**", "apps/web/src/app/api/**"],
+      include: ["packages/*/src/**/*.ts", "apps/web/src/lib/**", "apps/web/src/components/**", "apps/web/src/app/api/**", "apps/web/src/instrumentation.ts"],
       exclude: ["packages/*/src/**/cli.ts", "packages/*/src/**/types.ts", "packages/claims/src/model.ts"],
       reporter: ["text-summary", "lcov"],
       reportsDirectory: "coverage",

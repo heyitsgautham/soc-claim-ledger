@@ -48,7 +48,7 @@ pnpm dev         # the same data, with the Next.js dev server
 
 `pnpm simulate` writes twelve seeded SOC submissions to `data/demo`, and `pnpm analyse` writes what the screens show to `data/demo/derived`.
 The web app only renders that output, so both must run before the first build, and the two scripts above run them first.
-The web server logs each recorded or refused verdict and each report export to stdout through pino, one JSON object per line.
+The web server logs each recorded or refused verdict, each report export, and every request that fails on the server with its route and error digest, to stdout through pino, one JSON object per line.
 `GET /api/health` answers 200 with the version, the cycle and the entity count, or 503 naming what is missing when the analysis has not run.
 The Docker health check and CI wait on it before they drive the app.
 
