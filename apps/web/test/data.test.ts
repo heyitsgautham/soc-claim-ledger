@@ -4,8 +4,21 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import type { Verdict } from "@ledger/claims/model";
 import { afterEach, beforeEach, test, vi } from "vitest";
-import { dataDir, defaultEntity, entityCodes, loadEntity, localAudit, localDir, localVerdicts, recordAudit, recordVerdict } from "@/lib/data";
+import {
+  dataDir,
+  defaultEntity,
+  entityCodes,
+  loadCalibrationHistory,
+  loadEntity,
+  localAudit,
+  localDir,
+  localVerdicts,
+  recordAudit,
+  recordVerdict,
+  verdictHistory,
+} from "@/lib/data";
 import { examinerId, setting } from "@/lib/env";
+import { machine } from "@/lib/machine";
 
 const demo = path.resolve(import.meta.dirname, "../../../data/demo");
 let local: string;
@@ -71,4 +84,19 @@ test("verdicts and audit lines append to the local directory and read back in or
     ["V-1", "V-2"],
   );
   assert.equal(localAudit()[0]?.action, "verdict_recorded");
+});
+
+test("the examiner history and the calibration come from the analysed data, and no history reads as none", () => {
+  const history = verdictHistory();
+  assert.ok(history.length > 0);
+  assert.ok(history.every((v) => v.blind && v.cycle < loadCalibrationHistory().cycles.at(-1)!.id));
+  vi.stubEnv("LEDGER_DATA_DIR", local);
+  assert.deepEqual(verdictHistory(), []);
+});
+
+test("the machine line names the platform, cores, memory and Node version", () => {
+  const m = machine();
+  assert.match(m.platform, /^(macOS|Linux|Windows|\w+) \w+$/);
+  assert.ok(m.cpus >= 1 && m.memoryGb >= 1);
+  assert.equal(m.node, process.versions.node);
 });
