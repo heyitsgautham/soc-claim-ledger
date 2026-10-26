@@ -97,7 +97,9 @@ CI runs all of these on every push and pull request, see `.github/workflows/ci.y
 
 Every setting is optional, and the defaults run the demo as committed.
 `.env.example` lists each variable the code reads, with its default and the file that reads it.
-To change one, copy it to `apps/web/.env.local` and uncomment the line.
+An empty value means the default.
+To change one, copy it to `apps/web/.env.local` and fill in the line.
+`scripts/env-example.test.ts` fails when the code reads a variable `.env.example` does not list.
 
 | Variable | Read by | Default |
 |---|---|---|

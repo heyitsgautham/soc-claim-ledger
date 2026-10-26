@@ -2,6 +2,7 @@ import { fileURLToPath } from "node:url";
 import { defineConfig } from "vitest/config";
 
 // One runner for every TypeScript unit test. The packages run as plain Node modules.
+// The repo project holds checks over the repository itself, such as .env.example.
 // The web tests resolve "@/" like the Next.js app does and render components on the server.
 // The end-to-end test needs a running server, so it has its own config, vitest.e2e.config.ts.
 
@@ -24,6 +25,13 @@ export default defineConfig({
         test: {
           name: "web",
           include: ["apps/web/test/**/*.test.{ts,tsx}"],
+          environment: "node",
+        },
+      },
+      {
+        test: {
+          name: "repo",
+          include: ["scripts/**/*.test.ts"],
           environment: "node",
         },
       },
