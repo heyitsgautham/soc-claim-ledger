@@ -52,3 +52,14 @@ test("a higher threshold splits notes a lower one would have joined", () => {
   assert.equal(templatedNotes(notes, 0.7, 5).clusters.length, 1);
   assert.equal(templatedNotes(notes, 0.95, 5).clusters.length, 0);
 });
+
+test("a note with a long run of punctuation inside one word is read in linear time", () => {
+  const run = (n: number) => `checked a${"-".repeat(n)}a host`;
+  const started = performance.now();
+  const s = noteSimilarity(run(200_000), "checked host");
+  // The old trim regex backtracked quadratically here, about a minute for 200,000 characters.
+  assert.ok(performance.now() - started < 1000, `${performance.now() - started} ms`);
+  assert.ok(s > 0.8 && s < 1);
+  assert.equal(noteSimilarity("--host--", "host"), 1);
+  assert.equal(noteSimilarity("(DMZ-WEB-21).", "dmz-web-21"), 1);
+});

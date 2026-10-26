@@ -33,10 +33,23 @@ export interface TemplatedNotesResult {
   flagged: boolean;
 }
 
+const WORD = /\w/;
+
+// Strips punctuation from both ends of a token in one pass. A regex with a trailing
+// [^\w]+$ backtracks quadratically on a long run of punctuation inside one token, and
+// closure notes are text the entity wrote.
+function trimToWord(raw: string): string {
+  let start = 0;
+  let end = raw.length;
+  while (start < end && !WORD.test(raw[start]!)) start++;
+  while (end > start && !WORD.test(raw[end - 1]!)) end--;
+  return raw.slice(start, end);
+}
+
 function tokens(text: string): Map<string, number> {
   const tf = new Map<string, number>();
   for (const raw of text.toLowerCase().split(/\s+/)) {
-    const t = raw.replace(/^[^\w]+|[^\w]+$/g, "");
+    const t = trimToWord(raw);
     if (t) tf.set(t, (tf.get(t) ?? 0) + 1);
   }
   return tf;
