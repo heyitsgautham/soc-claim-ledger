@@ -5,7 +5,7 @@
 #   docker build -t soc-claim-ledger:0.1 .
 #   docker run -p 127.0.0.1:3157:3157 soc-claim-ledger:0.1
 
-FROM node:22-bookworm-slim
+FROM node:26-bookworm-slim
 
 ENV PNPM_HOME=/pnpm \
     PATH=/pnpm:$PATH \
