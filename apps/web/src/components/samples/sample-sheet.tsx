@@ -75,8 +75,9 @@ export function SampleSheet({ sheet, initial, entity }: { sheet: Sheet; initial:
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ entity, itemKey: item.key, verdict: v }),
       });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error ?? res.statusText);
+      // A server that failed before answering in JSON still gets its status shown, not a parse error.
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(json.error ?? `The verdict was not saved, the server answered ${res.status} ${res.statusText}`.trim());
       setVerdicts((cur) => ({ ...cur, [item.key]: json.verdict as Verdict }));
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));

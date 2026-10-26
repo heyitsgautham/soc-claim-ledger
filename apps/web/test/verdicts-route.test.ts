@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdtempSync, rmSync } from "node:fs";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, test, vi } from "vitest";
@@ -86,4 +86,16 @@ test("GET lists the verdicts recorded here, filtered by entity when asked", asyn
     only.map((v: { entity: string }) => v.entity),
     ["S-03"],
   );
+});
+
+test("a verdict that cannot be written answers 500 in JSON naming the file, and logs it", async () => {
+  const error = vi.spyOn(log, "error").mockImplementation(() => undefined);
+  const blocked = path.join(local, "not-a-directory");
+  writeFileSync(blocked, "");
+  vi.stubEnv("LEDGER_LOCAL_DIR", blocked);
+  const item = loadEntity("P-04").samples.items[0]!;
+  const res = await post({ entity: "P-04", itemKey: item.key, verdict: "no_issue" });
+  assert.equal(res.status, 500);
+  assert.match((await res.json()).error, /^The verdict was not saved\. .*not-a-directory/);
+  assert.equal(error.mock.calls.length, 1);
 });

@@ -45,14 +45,20 @@ export async function POST(req: Request) {
     recordedAt: istNow(),
     blind: true,
   };
-  recordVerdict(v);
-  recordAudit({
-    at: v.recordedAt,
-    actor: examiner,
-    action: "verdict_recorded",
-    subject: `${v.entity} ${v.recordId}`,
-    detail: `${v.verdict.replace("_", " ")}, blind, ${detectors.length ? `${detectors.length} detector${detectors.length > 1 ? "s" : ""}` : `${v.pick} pick`}`,
-  });
+  try {
+    recordVerdict(v);
+    recordAudit({
+      at: v.recordedAt,
+      actor: examiner,
+      action: "verdict_recorded",
+      subject: `${v.entity} ${v.recordId}`,
+      detail: `${v.verdict.replace("_", " ")}, blind, ${detectors.length ? `${detectors.length} detector${detectors.length > 1 ? "s" : ""}` : `${v.pick} pick`}`,
+    });
+  } catch (e) {
+    // An unwritable data/local is the machine's problem, and the examiner needs to see which file.
+    log.error({ entity: v.entity, recordId: v.recordId, err: e }, "verdict not saved");
+    return NextResponse.json({ error: `The verdict was not saved. ${e instanceof Error ? e.message : String(e)}` }, { status: 500 });
+  }
   log.info({ entity: v.entity, recordId: v.recordId, verdict: v.verdict, examiner, detectors: detectors.length }, "verdict recorded");
   return NextResponse.json({ verdict: v, item });
 }
