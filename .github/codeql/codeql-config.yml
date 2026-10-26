@@ -1,0 +1,8 @@
+name: soc-claim-ledger
+
+# The test suites strip HTML with simple regexes to read rendered markup, which CodeQL
+# reads as sanitisers. They never ship, so they are left out of the analysis.
+paths-ignore:
+  - "**/test/**"
+  - "**/tests/**"
+  - "apps/web/e2e/**"
