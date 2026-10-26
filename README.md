@@ -94,7 +94,7 @@ The pytest run includes the parity test that holds the SQL ledger and the TypeSc
 | `pnpm test:e2e` | every screen in Chromium against a running `pnpm start`, failing on any request that leaves the machine, through `vitest.e2e.config.ts` |
 | `pnpm lint` | Biome lint and format check over the TypeScript, Ruff check and format check over the Python |
 | `pnpm format` | rewrites both sides with Biome and Ruff |
-| `pnpm typecheck` | `tsc` in every package, after `pnpm --filter @ledger/web build` |
+| `pnpm typecheck` | `tsc` in every TypeScript package, after `pnpm --filter @ledger/web build`, and mypy in strict mode over the API |
 | `pnpm audit:deps` | `pnpm audit` and `pip-audit` over the lockfiles, high severity and up |
 
 CI runs all of these on every push and pull request, see `.github/workflows/ci.yml`.

@@ -67,7 +67,8 @@ def ingest(data: Path, warehouse: Path) -> list[Ingested]:
                 raise IngestError(f"{src}: SHA-256 does not match the manifest")
             dest = warehouse / name / f"entity={entity}" / f"quarter={quarter}" / "data.parquet"
             dest.parent.mkdir(parents=True, exist_ok=True)
-            rows = con.execute(f"select count(*) from {reader(src)}").fetchone()[0]
+            counted = con.execute(f"select count(*) from {reader(src)}").fetchone()
+            rows = int(counted[0]) if counted else 0
             if rows != entry["rows"]:
                 raise IngestError(f"{src}: {rows} rows, the manifest declares {entry['rows']}")
             con.execute(f"copy (select * from {reader(src)}) to '{dest}' (format parquet, compression zstd)")

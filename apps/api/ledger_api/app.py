@@ -7,8 +7,9 @@ import logging
 import re
 import time
 import uuid
+from collections.abc import Awaitable, Callable
 from dataclasses import asdict
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import FastAPI, HTTPException, Path, Query, Request
 from fastapi.responses import JSONResponse, Response
@@ -39,8 +40,32 @@ class ErrorBody(BaseModel):
     request_id: str | None = None
 
 
+class Health(BaseModel):
+    status: str
+    version: str
+    network: str
+
+
+class RecomputedMetric(BaseModel):
+    metric: str
+    value: float
+    matched: int | None
+    population: int
+
+
+class SqlLedger(BaseModel):
+    entity: str
+    quarter: str
+    metrics: list[RecomputedMetric]
+
+
+class IngestResult(BaseModel):
+    exports: int
+    rows: int
+
+
 @app.middleware("http")
-async def log_requests(request: Request, call_next):
+async def log_requests(request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
     """One log line per request, and a typed 500 with the cause logged when a handler fails.
     Every request gets an ID, the caller's X-Request-ID or a new one, echoed in the response."""
     start = time.perf_counter()
@@ -75,7 +100,7 @@ async def refused_export(request: Request, exc: IngestError) -> JSONResponse:
     return JSONResponse(ErrorBody(error="export_refused", detail=str(exc), request_id=request_id.get()).model_dump(), status_code=422)
 
 
-def _derived(name: str):
+def _derived(name: str) -> Any:
     path = data_dir() / "derived" / name
     if not path.exists():
         raise HTTPException(503, f"{path} is missing, run pnpm analyse")
@@ -83,8 +108,8 @@ def _derived(name: str):
 
 
 @app.get("/health")
-def health():
-    return {"status": "ok", "version": __version__, "network": "none required"}
+def health() -> Health:
+    return Health(status="ok", version=__version__, network="none required")
 
 
 @app.get("/metrics", include_in_schema=False)
@@ -94,19 +119,19 @@ def prometheus_metrics() -> Response:
 
 
 @app.get("/entities")
-def entities():
+def entities() -> Any:
     return _derived("portfolio.json")["entries"]
 
 
 @app.get("/entities/{code}/ledger")
-def ledger(code: EntityCode):
+def ledger(code: EntityCode) -> Any:
     if code not in {e["code"] for e in _derived("portfolio.json")["entries"]}:
         raise HTTPException(404, f"no entity {code}")
     return _derived(f"entities/{code}.json")["assessment"]
 
 
 @app.get("/entities/{code}/ledger/sql")
-def ledger_sql(code: EntityCode, quarter: QuarterId = None):
+def ledger_sql(code: EntityCode, quarter: QuarterId = None) -> SqlLedger:
     wh = warehouse_dir()
     if not wh.exists():
         raise HTTPException(503, "no warehouse yet, POST /ingest first")
@@ -117,17 +142,17 @@ def ledger_sql(code: EntityCode, quarter: QuarterId = None):
     q = quarter or submitted[-1]
     if q not in submitted:
         raise HTTPException(404, f"no {q} submission for {code}, it submitted {', '.join(submitted)}")
-    return {"entity": code, "quarter": q, "metrics": [asdict(r) for r in recompute(con, code, q)]}
+    return SqlLedger(entity=code, quarter=q, metrics=[RecomputedMetric(**asdict(r)) for r in recompute(con, code, q)])
 
 
 @app.get("/calibration")
-def calibration():
+def calibration() -> Any:
     return _derived("calibration.json")
 
 
 @app.post("/ingest")
-def run_ingest():
+def run_ingest() -> IngestResult:
     done = ingest(data_dir(), warehouse_dir())
     for d in done:
         metrics.INGESTED_ROWS.labels(d.export).inc(d.rows)
-    return {"exports": len(done), "rows": sum(d.rows for d in done)}
+    return IngestResult(exports=len(done), rows=sum(d.rows for d in done))

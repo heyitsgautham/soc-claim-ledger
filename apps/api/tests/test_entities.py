@@ -61,3 +61,13 @@ def test_health_needs_no_data_and_no_network(client, monkeypatch, tmp_path):
     body = client.get("/health").json()
     assert body["status"] == "ok" and body["network"] == "none required"
     assert body["version"] == service.__version__
+
+
+def test_the_openapi_schema_types_each_json_response(client):
+    spec = client.get("/openapi.json").json()
+    ok = lambda path, method="get": spec["paths"][path][method]["responses"]["200"]["content"]["application/json"]["schema"]  # noqa: E731
+    assert ok("/health") == {"$ref": "#/components/schemas/Health"}
+    assert ok("/entities/{code}/ledger/sql") == {"$ref": "#/components/schemas/SqlLedger"}
+    assert ok("/ingest", "post") == {"$ref": "#/components/schemas/IngestResult"}
+    metric = spec["components"]["schemas"]["RecomputedMetric"]
+    assert metric["required"] == ["metric", "value", "matched", "population"]
