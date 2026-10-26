@@ -18,10 +18,10 @@
     "next": "16.4.3",
     "pino": "10.4.0",
     "playwright-core": "1.63.0",
-    "radix-ui": "^1.6.7",
+    "radix-ui": "1.6.7",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "server-only": "^0.0.1",
+    "server-only": "0.0.1",
     "tailwind-merge": "3.7.0",
     "zod": "4.6.7"
   },
