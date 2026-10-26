@@ -87,8 +87,8 @@ The pytest run includes the parity test that holds the SQL ledger and the TypeSc
 | Command | What it runs |
 |---|---|
 | `pnpm test` | simulate, analyse, `test:coverage`, `test:api` |
-| `pnpm test:unit` | every Vitest project in `vitest.config.ts`, `packages/*/test` and `apps/web/test`, without coverage |
-| `pnpm test:web` | only the `web` project, the web helpers and server-rendered components |
+| `pnpm test:unit` | every Vitest project in `vitest.config.ts`, `packages/*/test`, `apps/web/test` and the repository checks in `scripts`, without coverage |
+| `pnpm test:web` | only the `web` project: helpers, API route handlers, server-rendered components, and interactive ones in happy-dom with Testing Library |
 | `pnpm test:coverage` | the unit tests under v8 coverage, failing below the thresholds in `vitest.config.ts` |
 | `pnpm test:api` | `apps/api/tests` with pytest and pytest-cov, failing below `fail_under` in `apps/api/pyproject.toml` |
 | `pnpm test:e2e` | every screen in Chromium against a running `pnpm start`, failing on any request that leaves the machine, through `vitest.e2e.config.ts` |

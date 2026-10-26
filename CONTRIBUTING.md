@@ -18,10 +18,12 @@ pnpm test
 | Change | Lives in | Tested in |
 |---|---|---|
 | A new export or schema field | `packages/submission/src` | `packages/submission/test` |
-| A new attested metric | `packages/claims/src/catalogue.ts` and `apps/api/ledger_api/ledger.py` | `packages/claims/test`, and the parity test in `apps/api/tests` |
+| A new attested metric | `packages/claims/src/catalogue.ts`, and `QUERIES` and `REQUIRES` in `apps/api/ledger_api/ledger.py` | `packages/claims/test`, and the parity tests in `apps/api/tests` |
 | A new detector | `packages/detect/src`, registered in `registry.ts` | `packages/detect/test` |
 | A new behaviour in the simulated SOC | `packages/simulate/src` | `packages/simulate/test` |
-| A screen or component | `apps/web/src` | `apps/web/test` for helpers and components, `apps/web/e2e/offline.test.ts` for screens |
+| A screen or component | `apps/web/src` | `apps/web/test`, server-rendered markup for display components and happy-dom with Testing Library for interactive ones, `apps/web/e2e/offline.test.ts` for screens |
+| A web API route | `apps/web/src/app/api` | `apps/web/test/*-route.test.ts`, calling the handler directly |
+| A new environment variable | wherever it is read | `.env.example`, which `scripts/env-example.test.ts` checks |
 | An API route | `apps/api/ledger_api/app.py` | `apps/api/tests` |
 
 A metric has two implementations on purpose, one in TypeScript and one in DuckDB SQL.

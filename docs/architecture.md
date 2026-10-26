@@ -44,9 +44,17 @@ Ingestion of real CSE exports through a schema-mapping step, the UI reading from
 | `packages/claims` | Claim schema, the claim-to-query mapping for sixteen metrics, tolerances, gap and insufficient-evidence rules, findings, risk, sampling, calibration |
 | `packages/detect` | SLA bunching, templated notes, negative space against sector peers, weekend coverage, repeat without remediation, versioned registry |
 | `packages/simulate` | SOC simulator with analysts, shifts, queues, SLAs and behaviour toggles, the claims writer, hidden ground truth, simulated examiners |
-| `apps/web` | Next.js App Router UI, self-hosted IBM Plex, verdict and PDF routes |
-| `apps/api` | FastAPI over DuckDB and Parquet, JSON and CSV ingestion, SQL ledger, parity tests, one JSON log line per request |
+| `apps/web` | Next.js App Router UI, self-hosted IBM Plex, verdict, PDF and health routes, pino JSON logs |
+| `apps/api` | FastAPI over DuckDB and Parquet, JSON and CSV ingestion, SQL ledger, parity tests, JSON logs with request IDs, Prometheus metrics |
 | `Dockerfile`, `deploy` | One Docker image built from the root Dockerfile, USB bundle and install script, network-off proof |
+
+## Logs, health and metrics
+
+Both services log one JSON object per line, the web app through pino on stdout and the API through Python logging on stderr.
+The API tags each request and every line logged while serving it with an `X-Request-ID`, and its failure bodies carry the same ID.
+`GET /api/health` on the web app answers 503 until the analysis is on disk, and the Docker health check waits on it.
+`GET /metrics` on the API serves request counts and latencies by route template, rows ingested and refused ingest runs.
+A claim the SQL ledger cannot recompute, because an export it needs is missing or its population is empty, is left out rather than reported as zero, the same rule the TypeScript ledger follows.
 
 ## Offline by construction
 
