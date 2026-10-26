@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 import time
+import uuid
 from dataclasses import asdict
 from typing import Annotated
 
@@ -15,7 +17,7 @@ from pydantic import BaseModel
 from . import __version__
 from .ingest import ENTITY, QUARTER, IngestError, ingest
 from .ledger import connect, recompute
-from .logs import LOGGER, configure
+from .logs import LOGGER, configure, request_id
 from .paths import data_dir, warehouse_dir
 
 configure()
@@ -27,25 +29,39 @@ EntityCode = Annotated[str, Path(pattern=ENTITY.pattern, description="Entity cod
 QuarterId = Annotated[str | None, Query(pattern=QUARTER.pattern, description="Quarter, such as FY27-Q1")]
 
 
+# A caller's own request ID is kept when it is short and plain, so it cannot inject into a log line.
+REQUEST_ID = re.compile(r"^[A-Za-z0-9._-]{1,64}$")
+
+
 class ErrorBody(BaseModel):
     error: str
     detail: str
+    request_id: str | None = None
 
 
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
-    """One log line per request, and a typed 500 with the cause logged when a handler fails."""
+    """One log line per request, and a typed 500 with the cause logged when a handler fails.
+    Every request gets an ID, the caller's X-Request-ID or a new one, echoed in the response."""
     start = time.perf_counter()
+    incoming = request.headers.get("x-request-id", "")
+    rid = incoming if REQUEST_ID.match(incoming) else uuid.uuid4().hex
+    token = request_id.set(rid)
     ctx: dict[str, object] = {"method": request.method, "path": request.url.path}
     try:
-        response = await call_next(request)
-    except Exception:
-        ctx.update(status=500, ms=round((time.perf_counter() - start) * 1000, 1))
-        log.exception("request failed", extra={"ctx": ctx})
-        body = ErrorBody(error="internal_error", detail=f"{request.method} {request.url.path} failed, see the service log")
-        return JSONResponse(body.model_dump(), status_code=500)
-    ctx.update(status=response.status_code, ms=round((time.perf_counter() - start) * 1000, 1))
-    log.info("request", extra={"ctx": ctx})
+        try:
+            response = await call_next(request)
+        except Exception:
+            ctx.update(status=500, ms=round((time.perf_counter() - start) * 1000, 1))
+            log.exception("request failed", extra={"ctx": ctx})
+            detail = f"{request.method} {request.url.path} failed, see the service log for request {rid}"
+            response = JSONResponse(ErrorBody(error="internal_error", detail=detail, request_id=rid).model_dump(), status_code=500)
+        else:
+            ctx.update(status=response.status_code, ms=round((time.perf_counter() - start) * 1000, 1))
+            log.info("request", extra={"ctx": ctx})
+    finally:
+        request_id.reset(token)
+    response.headers["X-Request-ID"] = rid
     return response
 
 
@@ -53,7 +69,7 @@ async def log_requests(request: Request, call_next):
 async def refused_export(request: Request, exc: IngestError) -> JSONResponse:
     """A submission that does not match its manifest is the caller's data, not a server fault."""
     log.warning("export refused", extra={"ctx": {"path": request.url.path, "reason": str(exc)}})
-    return JSONResponse(ErrorBody(error="export_refused", detail=str(exc)).model_dump(), status_code=422)
+    return JSONResponse(ErrorBody(error="export_refused", detail=str(exc), request_id=request_id.get()).model_dump(), status_code=422)
 
 
 def _derived(name: str):
