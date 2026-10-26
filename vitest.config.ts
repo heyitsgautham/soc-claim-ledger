@@ -6,6 +6,7 @@ import { defineConfig } from "vitest/config";
 // The end-to-end test needs a running server, so it has its own config, vitest.e2e.config.ts.
 
 const web = fileURLToPath(new URL("./apps/web/src", import.meta.url));
+const serverOnly = fileURLToPath(new URL("./apps/web/test/stubs/server-only.ts", import.meta.url));
 
 export default defineConfig({
   test: {
@@ -19,7 +20,7 @@ export default defineConfig({
         },
       },
       {
-        resolve: { alias: { "@": web } },
+        resolve: { alias: { "@": web, "server-only": serverOnly } },
         test: {
           name: "web",
           include: ["apps/web/test/**/*.test.{ts,tsx}"],
@@ -34,6 +35,8 @@ export default defineConfig({
         "apps/web/src/lib/format.ts",
         "apps/web/src/lib/scale.ts",
         "apps/web/src/lib/brand.ts",
+        "apps/web/src/lib/data.ts",
+        "apps/web/src/lib/env.ts",
         "apps/web/src/lib/verdict-request.ts",
         "apps/web/src/components/quantity.tsx",
         "apps/web/src/components/finding-text.tsx",

@@ -6,7 +6,7 @@ import { type Browser, type BrowserContext, chromium, type Page } from "playwrig
 // records any request leaving this server's origin and refuses it. One such request fails
 // the test. Run against a production build: pnpm build && pnpm start, then pnpm test:e2e.
 
-const base = new URL(process.env.LEDGER_URL ?? "http://localhost:3157");
+const base = new URL(process.env.LEDGER_URL || "http://localhost:3157");
 const escaped: string[] = [];
 const errors: string[] = [];
 let browser: Browser;

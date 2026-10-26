@@ -1,6 +1,7 @@
 import type { Verdict } from "@ledger/claims/model";
 import { NextResponse } from "next/server";
 import { entityCodes, loadEntity, localVerdicts, recordAudit, recordVerdict } from "@/lib/data";
+import { examinerId } from "@/lib/env";
 import { parseVerdictRequest, VERDICT_REQUEST_ERROR } from "@/lib/verdict-request";
 
 // Blind verdict entry. The browser sends only which record and which verdict. The server
@@ -27,7 +28,7 @@ export async function POST(req: Request) {
   const analysis = loadEntity(body.entity);
   const item = analysis.samples.items.find((i) => i.key === body.itemKey);
   if (!item) return NextResponse.json({ error: `${body.itemKey} is not on the ${body.entity} sample sheet` }, { status: 404 });
-  const examiner = process.env.LEDGER_EXAMINER ?? "EX-02";
+  const examiner = examinerId();
   const detectors = item.reasons.map((r) => r.detector).filter((d, i, all) => all.findIndex((x) => x.id === d.id) === i);
   const v: Verdict = {
     id: `V-${analysis.cycle}-${analysis.code}-${String(item.n).padStart(2, "0")}-live`,

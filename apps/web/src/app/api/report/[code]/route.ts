@@ -4,6 +4,7 @@ import path from "node:path";
 import { NextResponse } from "next/server";
 import { chromium } from "playwright-core";
 import { entityCodes, loadEntity, localDir, recordAudit } from "@/lib/data";
+import { examinerId } from "@/lib/env";
 
 // Renders the report page to an A4 PDF with the Chromium already on this machine and
 // files it under data/local/reports. The browser loads only this server's own pages.
@@ -43,7 +44,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ code: s
     const sha256 = createHash("sha256").update(pdf).digest("hex");
     recordAudit({
       at: istNow(),
-      actor: process.env.LEDGER_EXAMINER ?? "EX-02",
+      actor: examinerId(),
       action: "report_exported",
       subject: `${code} ${file}`,
       detail: `${pages} pages, SHA-256 ${sha256.slice(0, 16)}`,

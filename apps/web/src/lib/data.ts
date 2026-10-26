@@ -2,6 +2,7 @@ import "server-only";
 import { existsSync, mkdirSync, readFileSync, appendFileSync } from "node:fs";
 import path from "node:path";
 import type { AuditEntry, Calibration, EntityAnalysis, Portfolio, Verdict } from "@ledger/claims/model";
+import { setting } from "./env";
 
 // The interface renders what `pnpm analyse` wrote to data/demo/derived. It computes
 // nothing itself, so every number on screen traces back to the analysis of the records.
@@ -12,11 +13,11 @@ function root(): string {
 }
 
 export function dataDir(): string {
-  return process.env.LEDGER_DATA_DIR ?? path.join(root(), "data/demo");
+  return setting("LEDGER_DATA_DIR", path.join(root(), "data/demo"));
 }
 
 export function localDir(): string {
-  return process.env.LEDGER_LOCAL_DIR ?? path.join(root(), "data/local");
+  return setting("LEDGER_LOCAL_DIR", path.join(root(), "data/local"));
 }
 
 function readJson<T>(file: string): T {
