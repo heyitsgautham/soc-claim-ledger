@@ -37,6 +37,14 @@ afterAll(async () => {
 
 const url = (p: string) => new URL(p, base).href;
 
+test("the health check reports the analysis it serves", async () => {
+  const res = await fetch(url("/api/health"));
+  assert.equal(res.status, 200);
+  const body = await res.json();
+  assert.equal(body.status, "ok");
+  assert.equal(body.entities, 12);
+});
+
 test("every screen renders from this machine alone", async () => {
   for (const p of [
     "/",

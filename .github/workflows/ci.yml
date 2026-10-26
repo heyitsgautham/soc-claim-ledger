@@ -35,7 +35,7 @@ jobs:
       - name: Offline end-to-end test
         run: |
           pnpm start > /tmp/web.log 2>&1 &
-          for i in $(seq 1 60); do curl -fsS http://127.0.0.1:3157/title > /dev/null && break; sleep 1; done
+          for i in $(seq 1 60); do curl -fsS http://127.0.0.1:3157/api/health > /dev/null && break; sleep 1; done
           pnpm test:e2e
       - name: Architecture PDF, two pages at most
         run: pnpm docs:pdf

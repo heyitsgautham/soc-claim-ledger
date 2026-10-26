@@ -11,7 +11,7 @@ trap 'docker rm -f soc-claim-ledger-offline >/dev/null 2>&1 || true' EXIT
 echo "network interfaces inside the container:"
 docker exec soc-claim-ledger-offline sh -c 'ls /sys/class/net'
 i=0
-until docker exec soc-claim-ledger-offline curl -fsS http://127.0.0.1:3157/title >/dev/null 2>&1; do
+until docker exec soc-claim-ledger-offline curl -fsS http://127.0.0.1:3157/api/health >/dev/null 2>&1; do
   i=$((i + 1)); [ "$i" -gt 60 ] && { docker logs soc-claim-ledger-offline; exit 1; }
   sleep 2
 done

@@ -42,5 +42,5 @@ COPY . .
 RUN rm -rf data/local && pnpm build
 
 EXPOSE 3157 8157
-HEALTHCHECK --interval=10s --timeout=3s --retries=12 CMD curl -fsS http://127.0.0.1:3157/title > /dev/null || exit 1
+HEALTHCHECK --interval=10s --timeout=3s --retries=12 CMD curl -fsS http://127.0.0.1:3157/api/health > /dev/null || exit 1
 CMD ["sh", "deploy/entrypoint.sh"]
