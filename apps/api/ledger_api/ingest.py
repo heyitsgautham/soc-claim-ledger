@@ -43,15 +43,21 @@ def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def sql_path(path: Path) -> str:
+    """A path as a DuckDB string literal. DuckDB takes no bound parameters for file names
+    in COPY or a view's read_parquet, so a quote in a folder name is doubled here."""
+    return "'" + str(path).replace("'", "''") + "'"
+
+
 def reader(src: Path) -> str:
     """The DuckDB table function that reads one export, chosen by its file name."""
-    path = str(src).replace("'", "''")
+    path = sql_path(src)
     name = src.name.removesuffix(".gz")
     compression = "gzip" if src.name.endswith(".gz") else "uncompressed"
     if name.endswith(".csv"):
-        return f"read_csv('{path}', header = true, auto_detect = true, compression = '{compression}')"
+        return f"read_csv({path}, header = true, auto_detect = true, compression = '{compression}')"
     if name.endswith((".ndjson", ".jsonl", ".json")):
-        return f"read_json('{path}', format = 'newline_delimited', compression = '{compression}', sample_size = -1)"
+        return f"read_json({path}, format = 'newline_delimited', compression = '{compression}', sample_size = -1)"
     raise IngestError(f"{src}: not a CSV or newline-delimited JSON export")
 
 
@@ -71,7 +77,7 @@ def ingest(data: Path, warehouse: Path) -> list[Ingested]:
             rows = int(counted[0]) if counted else 0
             if rows != entry["rows"]:
                 raise IngestError(f"{src}: {rows} rows, the manifest declares {entry['rows']}")
-            con.execute(f"copy (select * from {reader(src)}) to '{dest}' (format parquet, compression zstd)")
+            con.execute(f"copy (select * from {reader(src)}) to {sql_path(dest)} (format parquet, compression zstd)")
             done.append(Ingested(entity, quarter, name, rows))
             log.info("export ingested", extra={"ctx": {"entity": entity, "quarter": quarter, "export": name, "rows": rows}})
     return done

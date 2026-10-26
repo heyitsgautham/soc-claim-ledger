@@ -9,6 +9,8 @@ from pathlib import Path
 
 import duckdb
 
+from .ingest import sql_path
+
 
 @dataclass
 class Recomputed:
@@ -19,7 +21,7 @@ class Recomputed:
 
 
 def _view(con: duckdb.DuckDBPyConnection, warehouse: Path, name: str) -> None:
-    con.execute(f"create or replace view {name} as select * from read_parquet('{warehouse / name}/**/*.parquet', hive_partitioning = true)")
+    con.execute(f"create or replace view {name} as select * from read_parquet({sql_path(warehouse / name / '**' / '*.parquet')}, hive_partitioning = true)")
 
 
 EXPORTS = ("alerts", "cases", "escalations", "assets", "log_sources", "analysts", "rules")

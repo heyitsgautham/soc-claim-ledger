@@ -91,3 +91,21 @@ def test_an_uncompressed_ndjson_export_ingests_like_its_gzipped_twin(tmp_path):
     rewrite(dst, "analysts", plain, rows)
     got = {d.export: d.rows for d in ingest(tmp_path, tmp_path / "parquet")}
     assert got["analysts"] == rows
+
+
+def test_a_quote_in_a_folder_name_survives_ingest_and_the_sql_ledger(tmp_path):
+    from ledger_api.ledger import connect, recompute
+
+    data = tmp_path / "o'brien" / "data"
+    shutil.copytree(data_dir() / "S-03" / "FY27-Q1", data / "S-03" / "FY27-Q1")
+    wh = tmp_path / "o'brien" / "parquet"
+    done = ingest(data, wh)
+    assert {d.export for d in done} >= {"cases", "alerts"}
+    got = {r.metric for r in recompute(connect(wh), "S-03", "FY27-Q1")}
+    assert "p1_mean_time_to_close" in got
+
+
+def test_sql_path_doubles_quotes_inside_one_literal(tmp_path):
+    from ledger_api.ingest import sql_path
+
+    assert sql_path(tmp_path / "a'b" / "c.csv") == f"'{tmp_path}/a''b/c.csv'"
