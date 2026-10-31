@@ -35,14 +35,14 @@
     "format": "biome format --write . && pnpm --filter @ledger/api format"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.14",
+    "@biomejs/biome": "2.6.3",
     "@ffmpeg-installer/ffmpeg": "1.1.0",
     "@ffprobe-installer/ffprobe": "2.1.2",
     "@ledger/claims": "workspace:*",
     "@types/node": "24.13.6",
     "@vitest/coverage-v8": "4.1.11",
-    "marked": "18.0.14",
-    "playwright": "1.63.0",
+    "marked": "18.1.2",
+    "playwright": "1.64.1",
     "tsx": "4.23.15",
     "typescript": "5.9.3",
     "vitest": "4.1.11"
