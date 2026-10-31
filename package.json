@@ -39,7 +39,7 @@
     "@ffmpeg-installer/ffmpeg": "1.1.0",
     "@ffprobe-installer/ffprobe": "2.1.2",
     "@ledger/claims": "workspace:*",
-    "@types/node": "24.13.6",
+    "@types/node": "26.6.6",
     "@vitest/coverage-v8": "4.1.11",
     "marked": "18.0.14",
     "playwright": "1.63.0",
